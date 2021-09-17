@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Pharmacy {
+    id              Int @id @default(autoincrement())
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    name            String
+    phone           String
+    address_road    String?
+    address         String?
+    x               Int?
+    y               Int?
+    openingHours    OpeningHour[]
+}
+
+model OpeningHour {
+    id          Int @id @default(autoincrement())
+    opening     Int
+    closing     Int
+    category    String
+    pharmacy    Pharmacy  @relation(fields: [pharmacyId], references: [id])
+    pharmacyId  Int
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
