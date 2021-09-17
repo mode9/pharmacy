@@ -1,0 +1,11 @@
+.inifinite-container {
+    overflow-x: hideen;
+    overflow-y: 'auto';
+    height: 100%;
+}
+.loading-container {
+    position: absolute;
+    bottom:  40px;
+    width: 100%;
+    text-align: center;
+}
