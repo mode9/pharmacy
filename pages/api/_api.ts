@@ -14,5 +14,5 @@ export type APIMetaType = {
     updatedAt?: string,
     pageNum?: number,
     next?: string,
-    action: HttpMethod
+    action: string|HttpMethod
 }
