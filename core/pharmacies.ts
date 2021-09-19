@@ -18,8 +18,8 @@ export default class Pharmacy {
   saturday: OpeningHours;
   sunday: OpeningHours;
   holiday: OpeningHours;
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
   loading?: boolean = true;
 
   constructor (data: PharmacyData) {
