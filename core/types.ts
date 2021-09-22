@@ -28,8 +28,8 @@ type PharmacyData = {
   saturday: OpeningHoursType;
   sunday: OpeningHoursType;
   holiday: OpeningHoursType;
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
   [key: string]: string | number | OpeningHoursType | undefined;
 };
 

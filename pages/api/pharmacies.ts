@@ -20,13 +20,12 @@ export default async function handler(
   const result: PharmacyAPIResult = {
     meta: {
       status: 200,
-      next: `http://${req.headers.host}/api/pharmacies`,
+      next: `http://${req.headers.host}${req.url}`,
       action: method,
     },
     data: [],
   }
   try {
-    console.log(`request URI: ${req.url}`);
    result.data = readFromJson().map((data) => new Pharmacy(data));
     // await sleep(1000);
     res

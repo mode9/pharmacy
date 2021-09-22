@@ -24,16 +24,16 @@ function parseCsvData(csv: CsvRowType) {
 }
 
 
-async function readFromCSV (): Promise<PharmacyData[]> {
-  let arrData: PharmacyData[] = [];
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(path.resolve(process.cwd(), 'data.csv'))
-      .pipe(csv.parse({ headers: true }))
-      .on('error', error => reject(error))
-      .on('data', row => arrData.push(parseCsvData(row)))
-      .on('end', () => resolve(arrData));
-  })
-}
+// async function readFromCSV (): Promise<PharmacyData[]> {
+//   let arrData: PharmacyData[] = [];
+//   return new Promise((resolve, reject) => {
+//     fs.createReadStream(path.resolve(process.cwd(), 'data.csv'))
+//       .pipe(csv.parse({ headers: true }))
+//       .on('error', (error: any) => reject(error))
+//       .on('data', (row: PharmacyData) => arrData.push(parseCsvData(row)))
+//       .on('end', () => resolve(arrData));
+//   })
+// }
 
-export default readFromCSV;
-export {parseCsvData};
+// export default readFromCSV;
+export { parseCsvData };
