@@ -7,9 +7,7 @@ import FindNearest from '../components/map/findNearest';
 import Pharmacy from "../core/pharmacies";
 import {PharmacyAPIResult} from './api/pharmacies';
 
-
 const { Header, Content, Sider } = Layout;
-
 type PharmacyItemType = Pharmacy & { loading?: boolean };
 
 
@@ -34,7 +32,6 @@ export default class Home extends Component {
                 }
                 callback(jsonResponse);
             })
-
     }
     initMap(kakao: any, kakaoMap: any) {
         const coords = new kakao.maps.LatLng(this.state.y, this.state.x); // 지도의 중심좌표
@@ -67,14 +64,17 @@ export default class Home extends Component {
             })
         }
     }
-
     clearMarkers() {
         this.state.markers.forEach((marker: any) => {
             marker.setMap(null);
         })
     }
     findPharmacyInBounds(kakao: any, map: any) {
-        let arrMarker: typeof kakao.maps.Marker[] = [];
+        // TODO:
+        //  1. 가까운 순으로 약국 정렬
+        //  2. 영업 중/중료 flag 추가
+        //  3. 오늘 공휴일인지 확인
+        let markers: typeof kakao.maps.Marker[] = [];
         const { data } = this.state;
         const bounds = map.getBounds();
         this.clearMarkers();
@@ -86,13 +86,11 @@ export default class Home extends Component {
                     map: map,
                     position: coords,
                 });
-                arrMarker.push(marker);
+                markers.push(marker);
             }
             return inBound;
         })
-        this.setState({
-            markers: arrMarker,
-        });
+        this.setState({markers});
         return list;
     }
     componentDidMount() {
@@ -116,7 +114,6 @@ export default class Home extends Component {
             kakao: kakao,
         });
     }
-
     render() {
         const { list, boundsChanged, map, kakao } = this.state;
         const siderStyle = { height: '100%', backgroundColor: '#fff' };
