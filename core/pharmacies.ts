@@ -5,7 +5,6 @@ import type { PharmacyData } from './types';
 
 
 export default class Pharmacy {
-  id?: number;
   name: string;
   phone: string;
   address_road?: string;
@@ -20,7 +19,7 @@ export default class Pharmacy {
   holiday: OpeningHours;
   x: number;
   y: number;
-  loading?: boolean = true;
+  loading: boolean = true;
 
   constructor (data: PharmacyData) {
     this.name = data.name;

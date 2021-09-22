@@ -3,7 +3,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 export default class MyDocument extends Document {
 
     render() {
-        const kakaoKey = "3b475a194f92641ce4f9a013230e1774";
+        const kakaoKey = process.env.KAKAO_KEY;
         return (
             <Html lang="ko">
                 <Head>
