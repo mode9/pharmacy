@@ -11,7 +11,6 @@ export type PharmacyAPIResult = {
   data: Pharmacy[] | [],
 }
 
-
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<PharmacyAPIResult>
@@ -20,7 +19,6 @@ export default async function handler(
   const result: PharmacyAPIResult = {
     meta: {
       status: 200,
-      next: `http://${req.headers.host}${req.url}`,
       action: method,
     },
     data: [],
