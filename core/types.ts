@@ -1,3 +1,5 @@
+import Pharmacy from "./pharmacies";
+
 type CsvRowType = {
   약국명: string;
   대표전화: string;
@@ -30,7 +32,8 @@ type PharmacyData = {
   holiday: OpeningHoursType;
   x: number;
   y: number;
-  [key: string]: string | number | OpeningHoursType | undefined;
+  isOpen: () => boolean;
+  [key: string]: string | number | OpeningHoursType | undefined | Function;
 };
 
 type OpeningHoursType = {
@@ -39,4 +42,9 @@ type OpeningHoursType = {
   [key: string]: string;
 };
 
-export type { OpeningHoursType, CsvRowType, PharmacyData };
+type PharmacyItemType = Pharmacy & {
+  loading?: boolean;
+  marker?: any;
+};
+
+export type { OpeningHoursType, CsvRowType, PharmacyData, PharmacyItemType };
