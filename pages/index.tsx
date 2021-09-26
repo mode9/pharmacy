@@ -4,11 +4,10 @@ import {Layout, Menu} from 'antd';
 import PharmacyItems from "../components/items";
 import GeolocationButton from "../components/map/geolocation";
 import FindNearest from '../components/map/findNearest';
-import Pharmacy from "../core/pharmacies";
 import {PharmacyAPIResult} from './api/pharmacies';
-
+import {PharmacyItemType} from '../core/types';
+import Pharmacy from "../core/pharmacies";
 const { Header, Content, Sider } = Layout;
-type PharmacyItemType = Pharmacy & { loading?: boolean };
 
 
 export default class Home extends Component {
@@ -19,6 +18,7 @@ export default class Home extends Component {
         boundsChanged: false,
         data: [],
         list: [],
+        listLoaded: false,
         markers: [],
         map: null,
         kakao: null,
@@ -69,14 +69,29 @@ export default class Home extends Component {
             marker.setMap(null);
         })
     }
+    distance (lat1: number, lng1: number, lat2:number, lng2:number): number {
+        var radlat1 = Math.PI * lat1 / 180;
+        var radlat2 = Math.PI * lat2 / 180;
+        var theta = lng1 - lng2;
+        var radtheta = Math.PI * theta / 180;
+        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+        dist = Math.acos(dist);
+        dist = dist * 180 / Math.PI;
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+        return dist;
+    };
     findPharmacyInBounds(kakao: any, map: any) {
         // TODO:
-        //  1. 가까운 순으로 약국 정렬
         //  2. 영업 중/중료 flag 추가
         //  3. 오늘 공휴일인지 확인
         let markers: typeof kakao.maps.Marker[] = [];
         const { data } = this.state;
         const bounds = map.getBounds();
+        const centerCoords = map.getCenter();
+        const centerLng = centerCoords.getLng();
+        const centerLat = centerCoords.getLat();
+        const compareDistance = this.distance;
         this.clearMarkers();
         const list = data.filter((pharmacy: PharmacyItemType) => {
             const coords = new kakao.maps.LatLng(pharmacy.y, pharmacy.x);
@@ -85,11 +100,18 @@ export default class Home extends Component {
                 let marker = new kakao.maps.Marker({
                     map: map,
                     position: coords,
+                    opacity: pharmacy.isOpen() ? 1 : .5,
                 });
+                pharmacy.marker = marker;
+                // kakao.maps.event.addListener(marker, 'mouseover', () => {
+                //
+                // })
                 markers.push(marker);
             }
             return inBound;
-        })
+        }).sort((a: PharmacyItemType, b: PharmacyItemType): number => {
+            return compareDistance(centerLat, centerLng, a.y, a.x) - compareDistance(centerLat, centerLng, b.y, b.x);
+        });
         this.setState({markers});
         return list;
     }
@@ -102,10 +124,10 @@ export default class Home extends Component {
         function fetchCallback (response: PharmacyAPIResult) {
             cls.setState({
                 initLoading: false,
-                data: response.data,
+                data: response.data.map(row => new Pharmacy(row)),
             });
             const list = cls.findPharmacyInBounds(kakao, map);
-            cls.setState({list});
+            cls.setState({listLoaded: true, list});
         }
         this.fetchData(fetchCallback);
         this.initFindNearestButton(kakao, map);
@@ -113,6 +135,7 @@ export default class Home extends Component {
             map: map,
             kakao: kakao,
         });
+        window.kakaoMap = map;
     }
     render() {
         const { list, boundsChanged, map, kakao } = this.state;
@@ -135,7 +158,7 @@ export default class Home extends Component {
                 </Header>
                 <Layout>
                     <Sider width={400} className="site-layout-background" style={siderStyle}>
-                        <PharmacyItems list={list} />
+                        <PharmacyItems list={list} loaded={this.state.listLoaded} />
                     </Sider>
                     <Content style={fullHeightStyle}>
                         <div id="map" style={mapStyle}>

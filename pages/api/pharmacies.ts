@@ -1,14 +1,14 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 
 
-import Pharmacy from '../../core/pharmacies';
 import {APIMetaType, HttpMethod} from './_api';
 import {readFromJson} from '../../core/utils';
+import {PharmacyData} from "../../core/types";
 
 
 export type PharmacyAPIResult = {
   meta: APIMetaType,
-  data: Pharmacy[] | [],
+  data: PharmacyData[] | [],
 }
 
 export default async function handler(
@@ -24,7 +24,7 @@ export default async function handler(
     data: [],
   }
   try {
-   result.data = readFromJson().map((data) => new Pharmacy(data));
+   result.data = readFromJson();
     // await sleep(1000);
     res
       .status(200)
