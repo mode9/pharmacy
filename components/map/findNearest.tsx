@@ -6,11 +6,16 @@ import { Component, MouseEventHandler } from 'react';
 interface FindNearestProps {
     boundsChanged: boolean;
     event: MouseEventHandler;
+    disabled: boolean;
 }
 
 export default class FindNearest extends Component<FindNearestProps> {
+    shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>) {
+        return (JSON.stringify(nextProps) != JSON.stringify(this.props));
+    }
     render() {
-        const { boundsChanged, event } = this.props;
+        const { boundsChanged, event, disabled } = this.props;
+
         return (
             <Tooltip title="현 위치 인근의 약국을 검색합니다.">
                 <Button
@@ -19,6 +24,7 @@ export default class FindNearest extends Component<FindNearestProps> {
                     shape="round"
                     icon={<RedoOutlined />}
                     size="large"
+                    disabled={disabled}
                     style={{
                         position: 'absolute',
                         top: '1.5rem',

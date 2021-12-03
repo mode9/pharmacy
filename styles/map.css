@@ -1,53 +1,11 @@
-.inifinite-container {
-    overflow-x: hideen;
-    overflow-y: 'auto';
-    height: 100%;
+.infinite-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 140px);
 }
 .loading-container {
     position: absolute;
     bottom:  40px;
     width: 100%;
     text-align: center;
-}
-@keyframes undefined-easeOutBounce {
-    0% {
-        transform: translateY(0);
-    }
-
-    12% {
-        transform: translateY(-5px);
-    }
-
-    24% {
-        transform: translateY(-10px);
-    }
-
-    36% {
-        transform: translateY(-15px);
-    }
-
-    54% {
-        transform: translateY(-20px);
-    }
-
-    74% {
-        transform: translateY(-10px);
-    }
-
-    82% {
-        transform: translateY(0);
-    }
-
-    92% {
-        transform: translateY(-5px);
-    }
-
-    96% {
-        transform: translateY(0);
-    }
-
-    100% {
-        transform: translateY(-3px);
-    }
-
 }

@@ -12,12 +12,22 @@ export default class Geolocation extends Component<GeolocationProps> {
     state = {
         loading: false,
     }
+    shouldComponentUpdate(nextProps: Readonly<{}>, nextState: Readonly<{}>) {
+        return !this.props.kakao || !this.props.map;
+    }
     onClickGeoLocation(kakao: any, map: any, callback: () => void) {
         function geoSuccess (position: GeolocationPosition) {
             const x = position.coords.latitude;
             const y = position.coords.longitude;
             const pos = new kakao.maps.LatLng(x, y);
-            map?.setCenter(pos);
+            function endCenterChanged () {
+                map?.setLevel(5, {animate: true});
+            }
+            kakao.maps.event.addListener(map, 'idle', endCenterChanged)
+            map?.panTo(pos);
+            setTimeout(() => {
+                kakao.maps.event.removeListener(map, 'idle', endCenterChanged);
+            }, 1000);
             callback();
         }
         function geoError (error: GeolocationPositionError) {

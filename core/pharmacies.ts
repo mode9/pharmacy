@@ -39,7 +39,6 @@ export default class Pharmacy {
   }
 
   getOpeningHour(weekDay: number): OpeningHours {
-    // TODO: CHECK HOLIDAY?
     return {
       0: this.monday,
       1: this.tuesday,
@@ -51,9 +50,9 @@ export default class Pharmacy {
     }[weekDay] || this.holiday;
   }
 
-  isOpen(): boolean {
-    const todayName: number = spacetime.now(TIMEZONE).day();
-    return this.getOpeningHour(todayName).isOpen();
+  isOpen(holiday: boolean = false): boolean {
+    const weekDay: number = holiday ? -1 : spacetime.now(TIMEZONE).day();
+    return this.getOpeningHour(weekDay).isOpen();
   }
 }
 
