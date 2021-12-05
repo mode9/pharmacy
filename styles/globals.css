@@ -17,17 +17,110 @@ a {
 }
 
 
-#__next {
+#__next,
+#__next > div:first-child {
   height: 100%;
 }
 .infinite-container {
-    overflow-x: hideen;
+    overflow-x: hidden;
     overflow-y: auto;
-    height: 100%;
+    height: calc(100vh - 164px);
+    margin-top: 1.5rem;
+    margin-right: -23px;
 }
 .loading-container {
     position: absolute;
     bottom:  40px;
     width: 100%;
     text-align: center;
+}
+.header {background-color: #fff}
+.ant-list-split .ant-list-item {border-bottom: none;}
+
+/* total width */
+.infinite-container::-webkit-scrollbar {
+    background-color: #fff;
+    width: 16px;
+}
+
+/* background of the scrollbar except button or resizer */
+.infinite-container::-webkit-scrollbar-track {
+    background-color: #fff;
+}
+
+/* scrollbar itself */
+.infinite-container::-webkit-scrollbar-thumb {
+    background-color: #babac0;
+    border-radius: 16px;
+    border: 4px solid #fff;
+}
+
+/* set button(top and bottom of the scrollbar) */
+.infinite-container::-webkit-scrollbar-button {
+    display:none;
+}
+
+.ant-select-dropdown {
+    border-radius: 10px;
+}
+
+.ant-select > .ant-select-selector {
+    border-radius: 20px !important;
+}
+
+.ant-list-item {
+    transition: box-shadow 50ms ease;
+}
+.ant-list-item:hover {
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+}
+
+#medi-custom-control-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 23px;
+    margin-right: 13px;
+    overflow: hidden
+}
+
+#medi-custom-control-group::after {
+    content: '내 위치 찾기';
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    left: -89px;
+    background-color: #000;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 7px;
+    animation: floating 1.25s ease-in-out infinite;
+}
+
+#medi-custom-control-group::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 18px;
+    left: -12px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+
+    border-left: 7px solid #000;
+    animation: floating 1.25s ease-in-out infinite;
+}
+
+#medi-custom-control-group > button {
+    border: none;
+    padding: .7rem;
+    cursor: pointer;
+}
+#medi-custom-control-group > button:first-child {
+    border-bottom: 1px solid #dddbda;
+}
+
+@keyframes floating {
+    0% { transform: translate(0,  0px); }
+    50%  { transform: translate(0, 1.5px); }
+    100%   { transform: translate(0, -0px); }
 }

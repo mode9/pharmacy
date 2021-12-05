@@ -12,5 +12,6 @@ export type APIMetaType = {
     status: number,
     createdAt?: string,
     updatedAt?: string,
-    action: string|HttpMethod
+    action: string|HttpMethod,
+    holiday?: boolean,
 }

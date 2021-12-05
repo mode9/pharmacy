@@ -9,22 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "3.0.2",
-    "antd": "^4.16.11",
+    "@primer/octicons-react": "^16.1.1",
+    "@react-spring/web": "^9.3.1",
+    "@types/styletron-engine-atomic": "^1.1.1",
+    "@types/styletron-react": "^5.0.3",
+    "@types/styletron-standard": "^2.0.2",
+    "@use-gesture/react": "^10.2.0",
+    "baseui": "^10.6.0",
     "fast-csv": "^4.3.6",
-    "framer-motion": "^4.1.17",
-    "gsap": "^3.7.1",
+    "googleapis": "39",
     "next": "11.0.1",
-    "prisma": "3.0.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-infinite-scroller": "^1.2.4",
-    "spacetime": "^6.16.3"
+    "react-query": "^3.33.7",
+    "spacetime": "^6.16.3",
+    "styletron-engine-atomic": "^1.4.8",
+    "styletron-react": "^6.0.2"
   },
   "devDependencies": {
     "@types/react": "17.0.16",
     "eslint": "7.32.0",
     "eslint-config-next": "11.0.1",
+    "eslint-plugin-baseui": "^10.6.0",
     "typescript": "4.3.5"
   }
 }

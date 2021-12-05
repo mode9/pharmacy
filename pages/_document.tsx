@@ -1,16 +1,35 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import * as React from 'react';
+import Document, {Head, Html, Main, NextScript} from 'next/document';
+import {Provider as StyletronProvider} from 'styletron-react';
+import {Server, Sheet} from 'styletron-engine-atomic';
+import {styletron} from '../core/styletron';
 
-export default class MyDocument extends Document {
-
+export default class MyDocument extends Document<{stylesheets: Sheet[]}> {
+    static getInitialProps(props: any) {
+        // eslint-disable-next-line react/display-name
+        const page = props.renderPage((App: any) => (props: any) => (
+            <StyletronProvider value={styletron}>
+                <App {...props} />
+            </StyletronProvider>
+        ));
+        const stylesheets = (styletron as Server).getStylesheets() || [];
+        return {...page, stylesheets};
+    }
     render() {
-        const kakaoKey = process.env.KAKAO_KEY;
+
         return (
             <Html lang="ko">
                 <Head>
-                     <script
-                        type="text/javascript"
-                        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&libraries=services,clusterer,drawing`}
-                      />
+                    <title>MEDI-LIVE</title>
+                    {this.props.stylesheets.map((sheet, i) => (
+                        <style
+                            className="_styletron_hydrate_"
+                            dangerouslySetInnerHTML={{__html: sheet.css}}
+                            media={sheet.attrs.media}
+                            data-hydrate={sheet.attrs['data-hydrate']}
+                            key={i}
+                        />
+                    ))}
                 </Head>
                 <body>
                     <Main />

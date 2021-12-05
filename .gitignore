@@ -8,3 +8,12 @@ node_modules
 
 data*.*
 credentials.json
+
+ENV
+
+*.log
+**/*.log
+log/
+logs/
+package-lock.json
+token.json
