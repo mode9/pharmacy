@@ -30,10 +30,19 @@ class OpeningHours {
     if (!this.opening || !this.closing) return false;
     const now: Spacetime = spacetime.now(TIMEZONE);
     const opening: Spacetime = now.time(this.opening);
-    const closing: Spacetime = now.time(this.closing);
+    let closingHours: number = parseInt(this.closing.split(':')[0]);
+    let closing;
+    if (closingHours > 23) {
+      closing = now.add(1, 'date');
+      closingHours = closingHours - 24;
+      let closingTime = closingHours + ':' + this.closing.split(':')[1];
+      closing = closing.time(closingTime);
+    } else {
+      closing = now.time(this.closing);
+    }
     return now.isBetween(opening, closing);
   }
-};
+}
 
 export default OpeningHours;
 export { TIMEZONE, stringToTimeObject };

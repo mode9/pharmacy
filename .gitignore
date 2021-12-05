@@ -6,3 +6,11 @@ node_modules
 .DS_Store
 .next
 ENV
+
+credentials.json
+
+*.log
+**/*.log
+log/
+logs/
+package-lock.json

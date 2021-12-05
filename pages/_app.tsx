@@ -1,8 +1,13 @@
-// import '../styles/globals.css'
-import 'antd/dist/antd.css';
 import '../styles/globals.css';
+// import 'css'
 import type { AppProps } from 'next/app'
-import {isUndefined} from "util";
+import React from 'react';
+import {Provider as StyletronProvider} from "styletron-react";
+import {LightTheme, BaseProvider} from 'baseui';
+import {styletron} from "../core/styletron";
+import {QueryClient, QueryClientProvider, Hydrate} from "react-query";
+
+
 
 declare global {
   interface Window {
@@ -11,6 +16,18 @@ declare global {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+    const [queryClient] = React.useState(() => new QueryClient())
+
+    return (
+        <StyletronProvider value={styletron}>
+            <BaseProvider theme={LightTheme}>
+                <QueryClientProvider client={queryClient}>
+                    <Hydrate state={pageProps.dehydratedState}>
+                        <Component {...pageProps} />
+                    </Hydrate>
+                </QueryClientProvider>
+            </BaseProvider>
+        </StyletronProvider>
+      )
 }
 export default MyApp

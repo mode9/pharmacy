@@ -33,7 +33,8 @@ type PharmacyData = {
   x: number;
   y: number;
   isOpen: () => boolean;
-  [key: string]: string | number | OpeningHoursType | undefined | Function;
+  isHoliday?: boolean;
+  [key: string]: string | number | OpeningHoursType | undefined | Function | boolean;
 };
 
 type OpeningHoursType = {
@@ -47,4 +48,8 @@ type PharmacyItemType = Pharmacy & {
   marker?: any;
 };
 
-export type { OpeningHoursType, CsvRowType, PharmacyData, PharmacyItemType };
+type Holiday = {
+  start: string;
+  summary: string;
+}
+export type { OpeningHoursType, CsvRowType, PharmacyData, PharmacyItemType, Holiday };
