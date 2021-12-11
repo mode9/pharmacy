@@ -181,7 +181,7 @@ class NaverMap implements mapInterface {
     getInitOptions() {
         const coords = [126.96072340180352, 37.54425411510226];
         return {
-            useStyleMap: true,
+            // useStyleMap: true,
             center: this.module.maps.LatLng(coords[1], coords[0]),
             zoom: 14,
             // mapTypeControl: true,
@@ -231,7 +231,7 @@ const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, r
     const [markers, setMarkers] = useState([]);
     const [css] = useStyletron();
     const isHoliday = data.meta.holiday;
-    const pharmacies = data.data;
+    const [pharms, setPharms] = useState(data.data)
 
 
     useEffect(() => {
@@ -247,12 +247,12 @@ const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, r
         })
 
         const mapBounds = mapInstance.map.getBounds();
-        for (let i=0; i < pharmacies.length; i++) {
-            const pharmacy = pharmacies[i];
+        for (let i=0; i < pharms.length; i++) {
+            const pharmacy = pharms[i];
             const latlng = new naver.maps.LatLng(pharmacy.y, pharmacy.x);
 
             if (mapBounds.hasLatLng(latlng)) {
-                const marker = new naver.maps.Marker({
+                let marker = new naver.maps.Marker({
                     map: mapInstance.map,
                     position: latlng,
                     zIndex: 100,
@@ -260,17 +260,39 @@ const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, r
                         content: renderToString(
                             <StyletronProvider value={styletron}>
                             <FixedMarker
-                                label='content'
-                                size={PINHEAD_SIZES_SHAPES.small}
-                                // needle={NEEDLE_SIZES.short}
+                                label={pharmacy.name}
+                                size={PINHEAD_SIZES_SHAPES.xSmallCircle}
+                                needle={NEEDLE_SIZES.none}
+
                             />
                             </StyletronProvider>
                         ),
-                        // size: new naver.maps.Size(38, 58),
-                        // anchor: new naver.maps.Point(19, 58),
-
                     }
                 });
+                naver.maps.Event.addListener(marker, 'click', () => {
+                    marker.setMap(null);
+                    marker = new naver.maps.Marker({
+                        map: mapInstance.map,
+                        position: latlng,
+                        zIndex: 100,
+                        // animation: naver.maps.Animation.BOUNCE,
+                        icon: {
+                            content: renderToString(
+                                <StyletronProvider value={styletron}>
+                                    <FixedMarker
+                                        label={pharmacy.name}
+                                        size={PINHEAD_SIZES_SHAPES.small}
+                                        needle={NEEDLE_SIZES.none}
+
+                                    />
+                                </StyletronProvider>
+                            ),
+                        }
+                    });
+                    // setTimeout(() => {
+                    //     marker.setAnimation(null)
+                    // }, 700)
+                })
                 // const styles = engine.getStylesheetsHtml();
                 // document.head.insertAdjacentHTML('beforeend', styles);
 
@@ -284,7 +306,7 @@ const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, r
             onInitialized();
             customControlButton.setMap(mapInstance.map)
         })
-    }, [moduleLoaded]);
+    }, [moduleLoaded, pharms]);
 
     return <div id="map" className={css({width: '100%', height: '100%'})} ref={mapRef} />
 })
