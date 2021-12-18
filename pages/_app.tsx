@@ -11,7 +11,8 @@ import {QueryClient, QueryClientProvider, Hydrate} from "react-query";
 
 declare global {
   interface Window {
-    kakaoMap: any,
+      kakaoMap: any,
+      google: any,
   }
 }
 

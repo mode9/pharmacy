@@ -10,12 +10,13 @@ import {Alert} from "baseui/icon";
 import {useSpring, animated, config} from '@react-spring/web';
 import {useGesture} from "@use-gesture/react";
 import {InfoIcon, LightBulbIcon, LocationIcon, QuestionIcon} from "@primer/octicons-react";
-// @ts-ignore
-import {renderToString} from "react-dom/server";
-import {FixedMarker, NEEDLE_SIZES, PINHEAD_SIZES_SHAPES} from "baseui/map-marker";
 
-import {Provider as StyletronProvider} from "styletron-react";
-import {styletron} from '../core/styletron';
+import {Wrapper as MapWrapper, Status as MapStatus} from "@googlemaps/react-wrapper";
+// @ts-ignore
+import {FixedMarker, NEEDLE_SIZES, PINHEAD_SIZES_SHAPES} from "baseui/map-marker";
+import {HeadingMedium, MonoHeadingMedium, Paragraph3, Paragraph4} from "baseui/typography";
+import {Heading, HeadingLevel} from "baseui/heading";
+import {Spinner} from "baseui/spinner";
 
 
 export async function getServerSideProps () {
@@ -125,83 +126,6 @@ function sleep(ms: number): Promise<null> {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-interface mapInterface {
-    module: any;
-    mapDiv: any;
-    map: any;
-
-    getInitOptions: () => {[key: string]: any};
-    init: () => void;
-}
-
-class KakaoMap implements mapInterface {
-    module: any;
-    mapDiv: any;
-    map: any;
-
-    constructor(module: any, mapDiv: any) {
-        this.module = module;
-        this.mapDiv = mapDiv;
-    }
-    getInitOptions () {
-        const coords = [126.96072340180352, 37.54425411510226];  // 기본 좌표
-        return {
-            center: new this.module.maps.LatLng(coords[1], coords[0]), // 지도의 중심좌표
-            zoom: 7,
-        }
-    }
-    init () {
-        this.map = new this.module.maps.Map(this.mapDiv, this.getInitOptions());
-        // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-        const mapTypeControl = new this.module.maps.MapTypeControl();
-        // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-        const zoomControl = new this.module.maps.ZoomControl();
-        this.map.relayout();
-        this.map.addControl(
-            mapTypeControl,
-            this.module.maps.ControlPosition.TOPRIGHT
-        );
-        this.map.addControl(
-            zoomControl,
-            this.module.maps.ControlPosition.RIGHT
-        );
-    }
-}
-
-class NaverMap implements mapInterface {
-    module: any;
-    mapDiv: any;
-    map: any;
-
-    constructor(module: any, mapDiv: any) {
-        this.module = module;
-        this.mapDiv = mapDiv;
-    }
-
-    getInitOptions() {
-        const coords = [126.96072340180352, 37.54425411510226];
-        return {
-            // useStyleMap: true,
-            center: this.module.maps.LatLng(coords[1], coords[0]),
-            zoom: 14,
-            // mapTypeControl: true,
-            // mapTypeControlOptions: {
-            //     style: this.module.maps.MapTypeControlStyle.BUTTON,
-            //     position: this.module.maps.Position.TOP_RIGHT
-            // },
-            zoomControl: true,
-            zoomControlOptions: {
-                style: this.module.maps.ZoomControlStyle.SMALL,
-                position: this.module.maps.Position.RIGHT_CENTER
-            },
-        }
-    }
-
-    init() {
-        this.map = new this.module.maps.Map(this.mapDiv, this.getInitOptions());
-    }
-}
-
 const CustomMapControl = () => {
     const [, theme] = useStyletron();
     return (
@@ -226,105 +150,59 @@ interface MapOptions {
     data: PharmacyAPIResult
 }
 
-const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, ref): JSX.Element => {
-    const mapRef = useRef(null);
-    const [markers, setMarkers] = useState([]);
-    const [css] = useStyletron();
-    const isHoliday = data.meta.holiday;
-    const [pharms, setPharms] = useState(data.data)
+// const Map = React.forwardRef(({onInitialized, moduleLoaded, data}: MapOptions, ref): JSX.Element => {
+//     const mapRef = useRef(null);
+//     const [markers, setMarkers] = useState([]);
+//     const [css] = useStyletron();
+//     const isHoliday = data.meta.holiday;
+//     const [pharms, setPharms] = useState(data.data)
+//
+//
+//     useEffect(() => {
+//         if (!moduleLoaded) return;
+//         const { naver } = window as any;
+//
+//         // const mapInstance = new NaverMap(naver, mapRef.current);
+//         // mapInstance.init();
+//         // const st/
+//
+//         // const customControlButton = new naver.maps.CustomControl(renderToString(<CustomMapControl />), {
+//         //     position: naver.maps.Position.TOP_RIGHT
+//         // })
+//
+//         const mapBounds = mapInstance.map.getBounds();
+//         for (let i=0; i < pharms.length; i++) {
+//             const pharmacy = pharms[i];
+//             const latlng = new naver.maps.LatLng(pharmacy.y, pharmacy.x);
+//         }
+//
+//
+//         naver.maps.Event.once(mapInstance.map, 'init_stylemap', () => {
+//             onInitialized();
+//             customControlButton.setMap(mapInstance.map)
+//         })
+//     }, [moduleLoaded, pharms]);
+//
+//     return <div id="map" className={css({width: '100%', height: '100%'})} ref={mapRef} />
+// })
+// Map.displayName = "Map";
 
+
+function MyMapComponent({center, zoom}: {center: any; zoom: number;}) {
+    const ref = React.useRef(null);
+    const [css] = useStyletron();
 
     useEffect(() => {
-        if (!moduleLoaded) return;
-        const { naver } = window as any;
+        new window.google.maps.Map(ref.current, {
+            center,
+            zoom,
+            mapId: '6fe32a03c7130da3',
+            maxZoom: 20,
+            minZoom: 10,
+        });
+    }, []);
 
-        const mapInstance = new NaverMap(naver, mapRef.current);
-        mapInstance.init();
-        // const st
-
-        const customControlButton = new naver.maps.CustomControl(renderToString(<CustomMapControl />), {
-            position: naver.maps.Position.TOP_RIGHT
-        })
-
-        const mapBounds = mapInstance.map.getBounds();
-        for (let i=0; i < pharms.length; i++) {
-            const pharmacy = pharms[i];
-            const latlng = new naver.maps.LatLng(pharmacy.y, pharmacy.x);
-
-            if (mapBounds.hasLatLng(latlng)) {
-                let marker = new naver.maps.Marker({
-                    map: mapInstance.map,
-                    position: latlng,
-                    zIndex: 100,
-                    icon: {
-                        content: renderToString(
-                            <StyletronProvider value={styletron}>
-                            <FixedMarker
-                                label={pharmacy.name}
-                                size={PINHEAD_SIZES_SHAPES.xSmallCircle}
-                                needle={NEEDLE_SIZES.none}
-
-                            />
-                            </StyletronProvider>
-                        ),
-                    }
-                });
-                naver.maps.Event.addListener(marker, 'click', () => {
-                    marker.setMap(null);
-                    marker = new naver.maps.Marker({
-                        map: mapInstance.map,
-                        position: latlng,
-                        zIndex: 100,
-                        // animation: naver.maps.Animation.BOUNCE,
-                        icon: {
-                            content: renderToString(
-                                <StyletronProvider value={styletron}>
-                                    <FixedMarker
-                                        label={pharmacy.name}
-                                        size={PINHEAD_SIZES_SHAPES.small}
-                                        needle={NEEDLE_SIZES.none}
-
-                                    />
-                                </StyletronProvider>
-                            ),
-                        }
-                    });
-                    // setTimeout(() => {
-                    //     marker.setAnimation(null)
-                    // }, 700)
-                })
-                // const styles = engine.getStylesheetsHtml();
-                // document.head.insertAdjacentHTML('beforeend', styles);
-
-                // markers.push()
-                // setMarkers([...markers, marker])
-            }
-        }
-
-
-        naver.maps.Event.once(mapInstance.map, 'init_stylemap', () => {
-            onInitialized();
-            customControlButton.setMap(mapInstance.map)
-        })
-    }, [moduleLoaded, pharms]);
-
-    return <div id="map" className={css({width: '100%', height: '100%'})} ref={mapRef} />
-})
-Map.displayName = "Map";
-
-
-
-function loadKakaoMapModule ({appKey, onAddScript, onLoad, onError}: {appKey: string, onAddScript?: () => any, onLoad?: (e: Event) => any, onError?: (e: Event) => any}) {
-    let script = document.createElement('script');
-    script.type = "text/javascript";
-    script.src = `//openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${appKey}&submodules=drawing`;
-    script.async = true;
-
-    onLoad && script.addEventListener("load", onLoad);
-    onError && script.addEventListener("error", onError);
-    document.head.appendChild(script);
-    onAddScript && onAddScript();
-    // setValue(prevState => prevState + 10);
+    return <div ref={ref} id="map" className={css({width: '100%', height: '100%'})} />;
 }
 
 type gestureOptions = {
@@ -402,26 +280,59 @@ function ExampleDiv () {
 
 export default function Home (props: HomeSSRProps): JSX.Element {
     const { data, NAVER_KEY } = props;
+    const [css, theme] = useStyletron();
     const [loading, setLoading] = useState(true);
     const [value, setValue] = useState(0);
     const [coords, setCoords] = useState([126.96072340180352, 37.54425411510226]);
     const [moduleLoaded, setModuleLoaded] = useState(false);
 
+    const mapRender = (status: MapStatus): React.ReactElement | undefined => {
+        switch (status) {
+            case MapStatus.LOADING:
+                return (
+                    <div className={css({height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'})}>
+                        <Spinner
+                            overrides={{
+                                ActivePath: {style: ({$theme}) => ({fill: $theme.colors.contentPrimary})},
+                                TrackPath: {style: {fill: 'transparent'}}
+                            }}
+                        />
+                    </div>
+                )
+            case MapStatus.FAILURE:
+                return (
+                    <div className={css({width: '100%', height: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'})}>
+                        <div className={css({alignItems: 'center'})}><Alert size={80} /></div>
+                        <div className={css({alignSelf: 'left'})}>
+                            <HeadingLevel>
+                                <Heading marginBottom='5px' styleLevel={6}>지도를 불러올 수 없습니다</Heading>
+                                <Paragraph4 marginTop='5px'>
+                                    STATUS: <span className={css({color: theme.colors.contentNegative})}>{status}</span>
+                                </Paragraph4>
+                            </HeadingLevel>
+                        </div>
+                    </div>
+                )
+            case MapStatus.SUCCESS:
+                return <MyMapComponent center={{ lat: 37.54425411510226, lng: 126.96072340180352 }} zoom={14} />;
+        }
+    };
+
     useLayoutEffect(() => {
-        if (!NAVER_KEY) throw new Error();
-        loadKakaoMapModule({
-            appKey: NAVER_KEY,
-            onAddScript: () => {
-                setValue(10);
-                console.log('script added')
-            },
-            onLoad: () => {
-                console.log('module loaded')
-                setModuleLoaded(true);
-                setValue(prevState => Math.min(prevState + 100, 100));
-            },
-            onError: () => {alert('error')}
-        })
+        // if (!NAVER_KEY) throw new Error();
+        // loadKakaoMapModule({
+        //     appKey: NAVER_KEY,
+        //     onAddScript: () => {
+        //         setValue(10);
+        //         console.log('script added')
+        //     },
+        //     onLoad: () => {
+        //         console.log('module loaded')
+        //         setModuleLoaded(true);
+        //         setValue(prevState => Math.min(prevState + 100, 100));
+        //     },
+        //     onError: () => {alert('error')}
+        // })
     }, []);  // eslint-disable-line
 
     useEffect(() => {
@@ -534,6 +445,7 @@ export default function Home (props: HomeSSRProps): JSX.Element {
     }, [])
 
 
+
     return (
         <Wrapper>
             {/*{loading && <ProgressLoaderComponent value={value} />}*/}
@@ -543,19 +455,20 @@ export default function Home (props: HomeSSRProps): JSX.Element {
             <Main>
             <Sidebar id="sidebar" />
                 <Content >
+                    <MapWrapper apiKey="AIzaSyAKRK6ZD_nV5fH5OCqvU-YBh0AIG68v-YQ"  render={mapRender} />
                     {/*<FixedMarker*/}
                     {/*    label='content'*/}
                     {/*    size={PINHEAD_SIZES_SHAPES.small}*/}
                     {/*    // needle={NEEDLE_SIZES.short}*/}
                     {/*/>*/}
-                    <Map
-                        onInitialized={() => {
-                            console.log('initialized')
-                            setValue(prevState => Math.min(prevState + 10, 100));
-                        }}
-                        moduleLoaded={moduleLoaded}
-                        data={data}
-                    />
+                    {/*<Map*/}
+                    {/*    onInitialized={() => {*/}
+                    {/*        console.log('initialized')*/}
+                    {/*        setValue(prevState => Math.min(prevState + 10, 100));*/}
+                    {/*    }}*/}
+                    {/*    moduleLoaded={moduleLoaded}*/}
+                    {/*    data={data}*/}
+                    {/*/>*/}
                 </Content>
 
             </Main>

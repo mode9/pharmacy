@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@googlemaps/react-wrapper": "^1.1.17",
     "@primer/octicons-react": "^16.1.1",
     "@react-spring/web": "^9.3.1",
     "@types/styletron-engine-atomic": "^1.1.1",
