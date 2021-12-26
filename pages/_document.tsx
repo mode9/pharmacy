@@ -1,35 +1,39 @@
 import * as React from 'react';
-import Document, {Head, Html, Main, NextScript} from 'next/document';
-import {Provider as StyletronProvider} from 'styletron-react';
-import {Server, Sheet} from 'styletron-engine-atomic';
-import {styletron} from '../core/styletron';
+import Document, {Head, Html, Main, NextScript, DocumentContext} from 'next/document';
+import { ServerStyleSheet } from "styled-components";
 
-export default class MyDocument extends Document<{stylesheets: Sheet[]}> {
-    static getInitialProps(props: any) {
-        // eslint-disable-next-line react/display-name
-        const page = props.renderPage((App: any) => (props: any) => (
-            <StyletronProvider value={styletron}>
-                <App {...props} />
-            </StyletronProvider>
-        ));
-        const stylesheets = (styletron as Server).getStylesheets() || [];
-        return {...page, stylesheets};
+
+export default class MyDocument extends Document {
+    static async getInitialProps(ctx: DocumentContext) {
+        const sheet = new ServerStyleSheet()
+        const originalRenderPage = ctx.renderPage
+
+        try {
+            ctx.renderPage = () =>
+                originalRenderPage({
+                    enhanceApp: (App) => (props) =>
+                        sheet.collectStyles(<App {...props} />),
+                })
+
+            const initialProps = await Document.getInitialProps(ctx)
+            return {
+                ...initialProps,
+                styles: (
+                    <>
+                        {initialProps.styles}
+                        {sheet.getStyleElement()}
+                    </>
+                ),
+            }
+        } finally {
+            sheet.seal()
+        }
     }
     render() {
-
         return (
             <Html lang="ko">
                 <Head>
                     <title>MEDI-LIVE</title>
-                    {this.props.stylesheets.map((sheet, i) => (
-                        <style
-                            className="_styletron_hydrate_"
-                            dangerouslySetInnerHTML={{__html: sheet.css}}
-                            media={sheet.attrs.media}
-                            data-hydrate={sheet.attrs['data-hydrate']}
-                            key={i}
-                        />
-                    ))}
                 </Head>
                 <body>
                     <Main />
