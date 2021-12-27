@@ -25,4 +25,17 @@ export const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   #map {width: 100%; height: 100%;}
+  
+  #geolocation-container > .spinner {
+    position: absolute;
+    width: 120px;
+    top: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 16px;
+  }
+  #geolocation-container.loading > .spinner {
+    display: flex !important;
+  }
+  #find-near-container.active { display: block; }
 `;

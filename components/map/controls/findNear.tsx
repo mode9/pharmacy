@@ -2,9 +2,6 @@ import styled from "styled-components";
 import {Redo} from "css.gg/icons/all";
 
 const Root = styled.div`
-  //padding-bottom: 9rem;
-  //position: absolute;
-  //bottom: 9rem;
   transform: translateY(-9rem);
   display: none;
 `
@@ -33,16 +30,15 @@ const Label = styled.span`
   white-space: nowrap;
 `;
 
-const FindNearest = ({hidden}: {hidden?: boolean}) => {
+const FindNear = ({hidden}: {hidden?: boolean}) => {
     return (
-        <Root>
+        <Root id="find-near-container">
             <Button>
                 <RedoIcon/>
                 <Label>현 위치에서 검색</Label>
             </Button>
         </Root>
     );
-
 }
 
-export default FindNearest;
+export default FindNear;

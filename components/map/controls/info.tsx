@@ -15,7 +15,7 @@ const InfoControl = () => {
         <Container>
             <ControlButton>
                 <Info />
-                <Label>정보</Label>
+                <Label>안내</Label>
             </ControlButton>
         </Container>
     )

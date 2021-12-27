@@ -49,7 +49,9 @@ const Needle = styled.div`
   width: 4px;
   height: 4px;
   background: ${(props: {disabled?: boolean}) => props.disabled ? "#8D8D8D" : "#000"};
-  box-shadow: rgba(0,0,0,.16) 0 4px 16px;
+  border: 1px solid #000;
+  border-top: none;
+  //box-shadow: rgba(0,0,0,.16) 0 4px 16px;
   opacity: .8;
 `;
 
@@ -58,7 +60,9 @@ const Label = styled.div`
   font-size: 12px;
   font-weight: bold;
   text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-
+  white-space: nowrap;
+  position: absolute;
+  bottom: -16px;
 `;
 
 const Marker = ({disabled, label}: {disabled?: boolean, label?: string}) => {
