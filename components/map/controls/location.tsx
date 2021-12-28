@@ -15,7 +15,7 @@ const LocationControl = () => (
     <Container id="geolocation-container">
         <ControlButton>
             <Location />
-            <Label>내 위치 찾기</Label>
+            <Label>내 주변 찾기</Label>
         </ControlButton>
         <Spinner hidden={true} />
     </Container>

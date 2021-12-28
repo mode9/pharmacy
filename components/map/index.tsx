@@ -79,7 +79,6 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     }
 
     function handleClickMarker (this: any): void {
-            // console.log(seq)
         console.log('marker clicked');
         console.log(this);
     }
@@ -148,14 +147,6 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         mapManager.updateMarkerClustering(visibleMarkers);
     }
 
-    // useEffect(() => {
-    //     if (!findNearController) return;
-    //
-    //
-    //     setInfoController(_infoController);
-    //     setLocController(_locController)
-    // }, [findNearController])
-
     useEffect(() => {
         if (!hasModuleLoaded() || !mapRef.current || initialized) return;
         const { naver } = window as any;
@@ -163,8 +154,6 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         naver.maps.Event.once(mapManager.map, 'init_stylemap', handleInitMap)
         setInitialized(true);
     }, [moduleLoaded, initialized]);
-
-
 
     return (
         <>
