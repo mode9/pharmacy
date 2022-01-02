@@ -23,9 +23,8 @@ export const ControlButton = styled.button`
   background: #fff;
   box-shadow: 0 2px 8px hsla(0, 0%, 0%, .26);
   border-radius: 8px;
-  //margin-right: 10px;
-  //min-width: 120px;
   text-align: left;
+  color: #000;
 `;
 
 export const Label = styled.span`

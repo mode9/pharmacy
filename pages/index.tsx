@@ -96,16 +96,11 @@ type FooType = {
 }
 
 export default function Home (props: HomeSSRProps): JSX.Element {
+    const [pharmsInBounds, setPharmsInBounds] = useState<Pharmacy[]>([]);
     const { data, NAVER_KEY, isHoliday } = props;
     const pharmacies: Pharmacy[] = data.map(row => new Pharmacy(row));
     const mapRef = React.useRef<FooType>(null);
     const findNearestButtonHidden = useState(false);
-
-    useEffect(() => {
-        if (!mapRef || !mapRef.current) return;
-
-        // const isHoliday = data.meta.holiday;
-        // const pharmacies = data.data;
 
     function distance (lat1: number, lng1: number, lat2:number, lng2:number): number {
         var radlat1 = Math.PI * lat1 / 180;
@@ -119,74 +114,23 @@ export default function Home (props: HomeSSRProps): JSX.Element {
         dist = dist * 1.609344;
         return dist;
     }
-    // function findPharmacyInBounds(kakao: any, map: any) {
-    //     // TODO:
-    //     //  2. 영업 중/중료 flag 추가
-    //     //  3. 오늘 공휴일인지 확인
-    //     let markers: typeof kakao.maps.Marker[] = [];
-    //     const { data } = this.state;
-    //     const bounds = map.getBounds();
-    //     const centerCoords = map.getCenter();
-    //     const centerLng = centerCoords.getLng();
-    //     const centerLat = centerCoords.getLat();
-    //     const compareDistance = this.distance;
-    //     this.clearMarkers();
-    //     let list = data.filter((pharmacy: PharmacyItemType) => {
-    //         const coords = new kakao.maps.LatLng(pharmacy.y, pharmacy.x);
-    //         return bounds.contain(coords);
-    //     }).sort((a: PharmacyItemType, b: PharmacyItemType): number => {
-    //         const aDistance = compareDistance(centerLat, centerLng, a.y, a.x);
-    //         const bDistance = compareDistance(centerLat, centerLng, b.y, b.x);
-    //         // const aOpen = a.isOpen(this.state.holiday) ? -10000 : 0;
-    //         // const bOpen = b.isOpen(this.state.holiday) ? -10000 : 0;
-    //         return (aDistance) - (bDistance) ;
-    //     });
-    //
-    //     if (!this.state.displayClosed) {
-    //         list = list.filter((pharmacy: PharmacyItemType) => {
-    //             return pharmacy.isOpen(this.state.holiday);
-    //         })
-    //     }
-    //     for (let i=0; i < list.length; i++) {
-    //         let pharmacy: PharmacyItemType = list[i];
-    //         const coords = new kakao.maps.LatLng(pharmacy.y, pharmacy.x);
-    //         let marker = new kakao.maps.Marker({
-    //             map: map,
-    //             position: coords,
-    //             opacity: pharmacy.isOpen(this.state.holiday) ? 1 : .5,
-    //         });
-    //         pharmacy.marker = marker;
-    //         // kakao.maps.event.addListener(marker, 'mouseover', () => {
-    //         //
-    //         // })
-    //         markers.push(marker);
-    //     }
-    //     this.setState({markers});
-    //     return list;
-    // }
 
-
-        //         function fetchCallback (response: PharmacyAPIResult) {
-//             cls.setState({
-//                 data: response.data.map(row => new Pharmacy(row)),
-//                 holiday: response.meta.holiday || false,
-//             });
-//             const list = cls.findPharmacyInBounds(kakao, map);
-//             cls.setState({listLoaded: true, list});
-//         }
-    }, [])
+    function handleInitialize(pharmacies: Pharmacy[]) {
+        console.log(pharmacies)
+        setPharmsInBounds(pharmacies);
+    }
 
 
     return (
         <Wrapper>
             {/*{loading && <ProgressLoaderComponent value={value} />}*/}
-            <BottomPanel />
+            <BottomPanel data={pharmsInBounds} />
             {/*<Header />*/}
             <Main>
                 <Sidebar id="sidebar" />
                 <Content >
                     {/*<Nav />*/}
-                    <MapComponent data={pharmacies} naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} isHoliday={isHoliday} ref={mapRef} />
+                    <MapComponent data={pharmacies} naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} isHoliday={isHoliday} ref={mapRef} onLoaded={handleInitialize} />
                 </Content>
             </Main>
         </Wrapper>

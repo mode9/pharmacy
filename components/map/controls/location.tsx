@@ -47,8 +47,9 @@ export class GeolocationHandler {
         } else if (posEqual) {
             return mapManager.setZoom(zoom);
         }
-
-        return mapManager.panTo(pos).then(() => mapManager.setZoom(zoom));
+        return mapManager.panTo(pos).then(() => {
+            return mapManager.setZoom(zoom);
+        });
     }
 
     geoError (error: GeolocationPositionError) {
