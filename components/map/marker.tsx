@@ -36,6 +36,9 @@ const OuterAnchor = styled.div`
 
   display: flex;
   flex-direction: column;
+
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+  transform-origin: bottom;
 `;
 
 const InnerAnchor = styled.div`
@@ -67,14 +70,14 @@ const Label = styled.div`
 
 const Marker = ({disabled, label}: {disabled?: boolean, label?: string}) => {
     return (
-        <Root>
-            <AnchorContainer>
-                <OuterAnchor disabled={disabled} >
+        <Root className="marker__root">
+            <AnchorContainer className="marker__anchor_container">
+                <OuterAnchor className="marker__outer_anchor" disabled={disabled} >
                     <InnerAnchor />
                 </OuterAnchor>
             </AnchorContainer>
             <Needle disabled={disabled} />
-            <Label>{label}</Label>
+            <Label className="marker__label">{label}</Label>
 
         </Root>
     )

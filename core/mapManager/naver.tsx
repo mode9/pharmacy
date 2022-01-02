@@ -4,6 +4,8 @@ import React from "react";
 import {mapInterface, MarkerOption} from "./map.interface";
 import Marker from "../../components/map/marker";
 import initMarkerClustering from "../../components/map/markerClustering/clustering";
+import {LatLngInterface} from "./types";
+import InfoWindow from "../../components/map/infoWindow";
 
 const clusterHtml = renderToString(<MarkerCluster/>);
 
@@ -28,11 +30,11 @@ export class NaverMap implements mapInterface {
             center: this.module.maps.LatLng(coords[1], coords[0]),
             zoom: 14,
             useStyleMap: true,
-            zoomControl: true,
-            zoomControlOptions: {
-                style: this.module.maps.ZoomControlStyle.SMALL,
-                position: this.module.maps.Position.LEFT_CENTER
-            },
+            zoomControl: false,
+            // zoomControlOptions: {
+            //     style: this.module.maps.ZoomControlStyle.SMALL,
+            //     position: this.module.maps.Position.LEFT_CENTER
+            // },
             tileSpare: 1,
         }
     }
@@ -60,12 +62,12 @@ export class NaverMap implements mapInterface {
         this.map = new this.module.maps.Map(this.mapDiv, this.getInitOptions());
     }
 
-    insertCustomControl = (controlHtml: string, options: { position: number }, onClick: () => void): any => {
+    insertCustomControl = (controlHtml: string, options: { position: number, hidden?: boolean }, onClick: () => void): any => {
         if (!this.module || !this.map) {
             throw new Error('mapManager not initialized yet.');
         }
         const control = new this.module.maps.CustomControl(controlHtml, options);
-        control.setMap(this.map);
+        control.setMap(options.hidden ? null : this.map);
         if (onClick) {
             this.module.maps.Event.addDOMListener(control.getElement(), 'click', onClick.bind(control));
         }
@@ -88,7 +90,7 @@ export class NaverMap implements mapInterface {
         })
         marker.disabled = props.disabled;
         if (props.onClick) {
-            this.module.maps.Event.addListener(marker, 'click', props.onClick.bind(marker))
+            this.module.maps.Event.addListener(marker, 'click', props.onClick.bind(marker));
         }
         this.markers.push(marker);
     }
@@ -149,16 +151,28 @@ export class NaverMap implements mapInterface {
 
     setZoom = (zoom: number): Promise<null> => {
         return new Promise((resolve) => {
+            this.addListenerOnce('idle', resolve);
             // @ts-ignore
             this.map.setZoom(zoom, true);
-            this.addListenerOnce('idle', resolve);
         })
     }
 
     panTo = (latlng: any): Promise<null> => {
         return new Promise((resolve) => {
-            this.map.panTo(latlng);
             this.addListenerOnce('idle', resolve);
+            this.map.panTo(latlng);
         });
+    }
+
+    getInfoWindowHtml = (marker: any): string => {
+        return renderToString(<InfoWindow />);
+    }
+
+    createInfoWindow = (marker: any) => {
+        return new this.module.maps.InfoWindow({content: this.getInfoWindowHtml(marker)});
+    }
+
+    clearInfoWindow = (infoWindow: any) => {
+        infoWindow?.close();
     }
 }

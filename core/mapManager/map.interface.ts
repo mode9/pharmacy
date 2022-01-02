@@ -24,4 +24,7 @@ export interface mapInterface {
     removeMarker: (marker: any) => void;
     setMarkerClustering: () => void;
     updateMarkerClustering: (markers: any[]) => void;
+    getInfoWindowHtml: (marker: any) => string;
+    createInfoWindow: (marker: any) => void;
+    clearInfoWindow: (infoWindow: any) => void;
 }

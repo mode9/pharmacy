@@ -3,7 +3,7 @@ import {Redo} from "css.gg/icons/all";
 
 const Root = styled.div`
   transform: translateY(-9rem);
-  display: none;
+  //margin-bottom: 9rem;
 `
 
 const Button = styled.button`
@@ -17,6 +17,7 @@ const Button = styled.button`
   align-items: center;
   justify-content: space-evenly;
   cursor: pointer;
+  color: #000;
 `;
 
 const RedoIcon = styled(Redo)`

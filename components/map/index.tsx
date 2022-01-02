@@ -1,5 +1,7 @@
 import {renderToString} from "react-dom/server";
 import React, {useEffect, useRef, useState} from "react";
+import {Info} from "css.gg/icons/tsx/Info";
+import styled from "styled-components";
 import Script from "next/script";
 import Pharmacy from "../../core/pharmacies";
 import InfoControl from "./controls/info";
@@ -20,6 +22,29 @@ interface MapOptions {
     filterInBounds: boolean;
     disableClosed: boolean;
     isHoliday?: boolean;
+    onLoaded: (pharmacies: Pharmacy[]) => void;
+}
+const TitleIcon = styled(Info)`
+  vertical-align: middle;
+  margin-right: 5px;
+  display: inline-block;
+`;
+
+const Title = styled.h3`
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0;
+`
+
+const InfoModalBody = function () {
+    return (
+        <>
+            <h4>약국 방문 전에 확인 전화를 권장드립니다.</h4>
+            <p>
+                <u>국립중앙의료원</u>에서 제공하는 심야운영약국 데이터를 기반으로 제작되었으며, 실제약국의 영업시간과는 다를 수 있습니다.
+            </p>
+        </>
+    )
 }
 
 const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactElement=> {
@@ -76,16 +101,30 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
             }
         }
         setPharms(pharmaciesInBounds);
+        props.onLoaded && props.onLoaded(pharmaciesInBounds);
     }
 
     function handleClickMarker (this: any): void {
         console.log('marker clicked');
-        console.log(this);
+        clearActiveMarkers();
+        const outerAnchorNode = this.getElement().firstElementChild;
+        outerAnchorNode.classList.add('active');
+        // if (this.infoWindow) {
+        //     if (this.infoWindow.getMap()) {
+        //         this.infoWindow.close();
+        //     } else {
+        //         this.infoWindow.open(this.getMap(), this);
+        //     }
+        // } else {
+        //     this.infoWindow = mapManager.createInfoWindow(this);
+        //     this.infoWindow.open(this.getMap(), this);
+        // }
     }
 
     function handleClickNear (this: any): void{
-        const findNearContainerNode = this.getElement().firstElementChild;
-        findNearContainerNode?.classList.remove('active');
+        // const findNearContainerNode = this.getElement().firstElementChild;
+        // findNearContainerNode?.classList.remove('active');
+        this.setMap(null);
         updateMarkers();
         mapManager.updateMarkerClustering(mapManager.markers);
         mapManager.markerCluster._redraw();
@@ -94,6 +133,8 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     function handleClickGeolocation (this: any): void {
         const geolocationHandler = new GeolocationHandler(mapManager);
         const containerNode = this.getElement().firstElementChild;
+
+        if (containerNode?.classList.contains('loading')) return;
         containerNode?.classList.add('loading');
         geolocationHandler.moveTo()
             .then(() => {
@@ -106,13 +147,17 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     }
 
     function handleClickInfo (this: any) {
-        console.log(this);
-
         setModalVisible(true);
     }
 
+    async function clearActiveMarkers () {
+        document.querySelectorAll('.marker__root.active').forEach((el) => {
+            el.classList.remove('active');
+        })
+    }
+
     function handleInitMap (): void {
-        const _findNearController = mapManager.insertCustomControl(nearControlHtml, {position: mapManager.module.maps.Position.BOTTOM_CENTER}, handleClickNear);
+        const _findNearController = mapManager.insertCustomControl(nearControlHtml, {position: mapManager.module.maps.Position.BOTTOM_CENTER, hidden: true}, handleClickNear);
         const _infoController = mapManager.insertCustomControl(infoControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickInfo);
         const _locController = mapManager.insertCustomControl(locationControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickGeolocation);
         _findNearController.name = 'findNear';
@@ -120,6 +165,7 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         _locController.name = 'geolocation';
         updateMarkers();
 
+        window.naver.maps.Event.addListener(mapManager.map, 'click', clearActiveMarkers);
         window.naver.maps.Event.addListener(mapManager.map, 'bounds_changed', handleBoundsChanged.bind(_findNearController));
         window.naver.maps.Event.addListener(mapManager.map, 'idle', handleIdle);
         mapManager.setMarkerClustering();
@@ -129,8 +175,10 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     function handleBoundsChanged (this: any) {
         const displayFindNearThrottle = 14;
         const zoom = mapManager.map.getZoom();
-        const findNearContainerNode = this.getElement().firstElementChild;
-        findNearContainerNode.classList.toggle('active', zoom >= displayFindNearThrottle);
+        this.setMap(zoom >= displayFindNearThrottle ? mapManager.map : null);
+        clearActiveMarkers();
+        // if ()
+        // findNearContainerNode.classList.toggle('active', zoom >= displayFindNearThrottle);
     }
 
     function handleIdle (): void {
@@ -170,6 +218,8 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
                         <Modal
                             style={styles}
                             closeModal={() => setModalVisible(false)}
+                            title={<><TitleIcon /><Title>안내사항</Title></>}
+                            body={<InfoModalBody />}
                         />
                     )
                 )}

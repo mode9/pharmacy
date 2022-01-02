@@ -5,7 +5,7 @@ export const GlobalStyle = createGlobalStyle`
   body {
     padding: 0;
     margin: 0;
-    height:  100%;
+    height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   }
@@ -38,4 +38,6 @@ export const GlobalStyle = createGlobalStyle`
     display: flex !important;
   }
   #find-near-container.active { display: block; }
+
+  .marker__root.active .marker__outer_anchor { transform: scale(2) }
 `;
