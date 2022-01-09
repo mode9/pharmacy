@@ -97,40 +97,28 @@ type FooType = {
 
 export default function Home (props: HomeSSRProps): JSX.Element {
     const [pharmsInBounds, setPharmsInBounds] = useState<Pharmacy[]>([]);
+    const [center, setCenter] = useState(null);
     const { data, NAVER_KEY, isHoliday } = props;
     const pharmacies: Pharmacy[] = data.map(row => new Pharmacy(row));
     const mapRef = React.useRef<FooType>(null);
     const findNearestButtonHidden = useState(false);
 
-    function distance (lat1: number, lng1: number, lat2:number, lng2:number): number {
-        var radlat1 = Math.PI * lat1 / 180;
-        var radlat2 = Math.PI * lat2 / 180;
-        var theta = lng1 - lng2;
-        var radtheta = Math.PI * theta / 180;
-        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-        dist = Math.acos(dist);
-        dist = dist * 180 / Math.PI;
-        dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344;
-        return dist;
-    }
-
-    function handleInitialize(pharmacies: Pharmacy[]) {
+    function handleInitialize(pharmacies: Pharmacy[], center: any) {
         console.log(pharmacies)
         setPharmsInBounds(pharmacies);
+        setCenter(center);
     }
-
 
     return (
         <Wrapper>
             {/*{loading && <ProgressLoaderComponent value={value} />}*/}
-            <BottomPanel data={pharmsInBounds} />
+            <BottomPanel data={pharmsInBounds} center={center} isHoliday={isHoliday} />
             {/*<Header />*/}
             <Main>
                 <Sidebar id="sidebar" />
                 <Content >
                     {/*<Nav />*/}
-                    <MapComponent data={pharmacies} naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} isHoliday={isHoliday} ref={mapRef} onLoaded={handleInitialize} />
+                    <MapComponent data={pharmacies} naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} isHoliday={isHoliday} ref={mapRef} onIdle={handleInitialize} />
                 </Content>
             </Main>
         </Wrapper>

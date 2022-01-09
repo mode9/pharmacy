@@ -7,6 +7,8 @@ export interface LatLngInterface {
     destinationPoint: (angle: number, meter: number) => this;
     equals: (latLng: this) => boolean;
     toString: () => string;
+    x: number;
+    y: number;
 
     toPoint: () => "Point";
 }

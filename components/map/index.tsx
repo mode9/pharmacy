@@ -11,6 +11,7 @@ import Spinner from "../spinner";
 import {NaverMap} from "../../core/mapManager/naver";
 import {useTransition} from '@react-spring/web';
 import Modal from "../modal";
+import {distance} from "../../core/mapManager/helpers";
 
 const infoControlHtml = renderToString(<InfoControl />);
 const locationControlHtml = renderToString(<LocationControl />)
@@ -22,7 +23,7 @@ interface MapOptions {
     filterInBounds: boolean;
     disableClosed: boolean;
     isHoliday?: boolean;
-    onLoaded: (pharmacies: Pharmacy[]) => void;
+    onIdle: (pharmacies: Pharmacy[], center: any) => void;
 }
 const TitleIcon = styled(Info)`
   vertical-align: middle;
@@ -100,8 +101,14 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
                 })
             }
         }
+        pharmaciesInBounds = pharmaciesInBounds.sort((a, b) => {
+            const center = mapManager.getCenter();
+            const aDistance = distance(a.x, a.y, center.x, center.y);
+            const bDistance = distance(b.x, b.y, center.x, center.y);
+            return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
+        });
         setPharms(pharmaciesInBounds);
-        props.onLoaded && props.onLoaded(pharmaciesInBounds);
+        props.onIdle && props.onIdle(pharmaciesInBounds, mapManager.getCenter());
     }
 
     function handleClickMarker (this: any): void {
@@ -175,7 +182,8 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     function handleBoundsChanged (this: any) {
         const displayFindNearThrottle = 14;
         const zoom = mapManager.map.getZoom();
-        this.setMap(zoom >= displayFindNearThrottle ? mapManager.map : null);
+        if (!this.getMap()) this.setMap(mapManager.map)
+        // this.setMap(zoom >= displayFindNearThrottle ? mapManager.map : null);
         clearActiveMarkers();
         // if ()
         // findNearContainerNode.classList.toggle('active', zoom >= displayFindNearThrottle);
