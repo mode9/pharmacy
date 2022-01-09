@@ -50,9 +50,13 @@ export default class Pharmacy {
     }[weekDay] || this.holiday;
   }
 
-  isOpen(holiday: boolean = false): boolean {
+  todayOpeningHour(holiday: boolean = false): OpeningHours {
     const weekDay: number = holiday ? -1 : spacetime.now(TIMEZONE).day();
-    return this.getOpeningHour(weekDay).isOpen();
+    return this.getOpeningHour(weekDay);
+  }
+
+  isOpen(holiday: boolean = false): boolean {
+    return this.todayOpeningHour(holiday).isOpen();
   }
 }
 

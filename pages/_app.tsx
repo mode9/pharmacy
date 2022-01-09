@@ -21,6 +21,11 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Head>
                 <title>MEDI-LIVE</title>
                 <meta name='viewport' content='initial-scale=1, viewport-fit=cover' />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@100;300;400;500;700&display=swap"
+                    rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
             </Head>
         <ThemeProvider theme={theme}>
             <GlobalStyle />

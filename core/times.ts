@@ -20,11 +20,19 @@ class OpeningHours {
     this.closing = data.closing;
   }
 
-  getOpening(): Spacetime {
-    return spacetime.now(TIMEZONE).time(this.opening);
+  getOpening(): Spacetime|null {
+    return this.opening ? spacetime.now(TIMEZONE).time(this.opening) : null;
   }
-  getClosing(): Spacetime {
-   return spacetime.now(TIMEZONE).time(this.closing); 
+  getClosing(): Spacetime|null {
+   return this.closing ? spacetime.now(TIMEZONE).time(this.closing) : null;
+  }
+  humanizeWorkingHours(): string {
+    const opening = this.getOpening();
+    const closing = this.getClosing();
+    if (!opening && !closing) return "영업안함"
+    const humanizedOpening = opening?.format('{hour-24-pad}:{minute-pad}') || "알수없음";
+    const humanizedClosing = closing?.format('{hour-24-pad}:{minute-pad}') || "알수없음";
+    return `${humanizedOpening} ~ ${humanizedClosing}`;
   }
   isOpen(): boolean {
     if (!this.opening || !this.closing) return false;
