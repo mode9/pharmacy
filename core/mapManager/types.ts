@@ -12,3 +12,16 @@ export interface LatLngInterface {
 
     toPoint: () => "Point";
 }
+
+export type LatLngObjectLiteral = {
+    lat: number;
+    lng: number;
+}
+
+export type NaverBounds = {
+    sw: LatLngInterface;
+    ne: LatLngInterface;
+
+    hasLatLng: (latlng: LatLngInterface|LatLngObjectLiteral) => boolean;
+    getCenter: () => LatLngInterface;
+}

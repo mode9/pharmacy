@@ -39,7 +39,7 @@ const Body = styled.div`
 
 const Footer = styled.div`
   text-align: right;
-  margin-top: auto;
+  margin-top: 2rem;
 `;
 
 const ModalButton = styled.button`

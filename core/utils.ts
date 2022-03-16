@@ -1,6 +1,9 @@
 import * as path from 'path';
 import spacetime from "spacetime";
 import type { PharmacyData, Holiday } from './types';
+import {distance} from "./mapManager/helpers";
+import Pharmacy from "./pharmacies";
+import {LatLngInterface} from "./mapManager/types";
 
 
 export async function sleep(ms: number): Promise<null> {
@@ -21,11 +24,17 @@ export function getAllHolidays(): Holiday[] {
   return JSON.parse(rawData);
 }
 
-export function isHoliday(): boolean {
-  const holidays: Holiday[] = getAllHolidays();
+export function isHoliday(holidays: Holiday[]): boolean {
   const today = spacetime.today('Asia/Seoul');
   return holidays.filter((holiday) => {
     return today.isEqual(spacetime(holiday.start, 'Asia/Seoul'));
   }).length > 0;
 }
 
+const sortWithDistance = (pharmacies: Pharmacy[], center: LatLngInterface) => {
+  return pharmacies.sort((a, b) => {
+    const aDistance = distance(a.x, a.y, center.x, center.y);
+    const bDistance = distance(b.x, b.y, center.x, center.y);
+    return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
+  });
+}

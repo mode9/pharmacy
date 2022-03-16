@@ -1,17 +1,28 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import styled from "styled-components";
 
 import BottomPanel from "../components/bottomPanel";
 import MapComponent from "../components/map";
-import Pharmacy from "../core/pharmacies";
-import {PharmacyData} from "../core/types";
+import Sidebar from "../components/sidebar";
 
-export async function getServerSideProps () {
+import {HolidayAPIResult, PharmacyAPIResult, PharmacyData} from "../core/types";
+import reduxWrapper from "../core/store";
+import {filterChanged, receivePharmacyData} from "../core/reducers/action";
+import {isHoliday} from "../core/utils";
+
+
+export const getServerSideProps = reduxWrapper.getServerSideProps(store => async () => {
     const {NAVER_KEY} = process.env;
-    const { data, meta } = await fetch('http://localhost:3000/api/pharmacies')
-        .then(res => res.json());
-    return { props: { data, NAVER_KEY, isHoliday: meta.holiday } }
-}
+    const pharmacyAPIRessult: PharmacyAPIResult = await fetch('http://localhost:3000/api/pharmacies').then(res => res.json());
+    const holidayAPIResult: HolidayAPIResult = await fetch("http://localhost:3000/api/holidays").then(res => res.json());
+    store.dispatch(receivePharmacyData(pharmacyAPIRessult.data));
+    store.dispatch(filterChanged({
+        isHoliday: isHoliday(holidayAPIResult.data),
+        bounds: null,
+        showClosed: true,
+    }));
+    return { props: { NAVER_KEY } }
+});
 
 const Wrapper = styled.div`
   width: 100%;
@@ -67,16 +78,6 @@ const Main = styled.div`
   background: #fff;
 `;
 
-const Sidebar = styled.div`
-  width: 500px;
-  height: 100%;
-  background: #fff;
-  border-right: 1px solid #000;
-  display: none;
-  @media screen and (min-width: 1136px) {
-    display: block;
-  }
-`;
 
 const Content = styled.div`
   width: 100%;
@@ -90,39 +91,22 @@ type HomeSSRProps = {
     isHoliday: boolean;
 }
 
-type FooType = {
-    hasModuleLoaded: () => boolean;
-    getPharmaciesInBounds: () => Pharmacy[],
-}
 
 export default function Home (props: HomeSSRProps): JSX.Element {
-    const [pharmsInBounds, setPharmsInBounds] = useState<Pharmacy[]>([]);
-    const [center, setCenter] = useState(null);
-    const { data, NAVER_KEY, isHoliday } = props;
-    const pharmacies: Pharmacy[] = data.map(row => new Pharmacy(row));
-    const mapRef = React.useRef<FooType>(null);
-    const findNearestButtonHidden = useState(false);
-
-    function handleInitialize(pharmacies: Pharmacy[], center: any) {
-        console.log(pharmacies)
-        setPharmsInBounds(pharmacies);
-        setCenter(center);
-    }
+    const { NAVER_KEY } = props;
 
     return (
         <Wrapper>
             {/*{loading && <ProgressLoaderComponent value={value} />}*/}
-            <BottomPanel data={pharmsInBounds} center={center} isHoliday={isHoliday} />
+            <BottomPanel />
             {/*<Header />*/}
             <Main>
-                <Sidebar id="sidebar" />
+                <Sidebar />
                 <Content >
                     {/*<Nav />*/}
-                    <MapComponent data={pharmacies} naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} isHoliday={isHoliday} ref={mapRef} onIdle={handleInitialize} />
+                    <MapComponent naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} />
                 </Content>
             </Main>
         </Wrapper>
     )
-
-
 }

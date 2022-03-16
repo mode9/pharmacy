@@ -31,8 +31,8 @@ export class GeolocationHandler {
     }
 
     geoSuccess (position: GeolocationPosition) {
-        const x = position.coords.latitude;
-        const y = position.coords.longitude;
+        const y = position.coords.latitude;
+        const x = position.coords.longitude;
         const mapManager = this.mapManager;
         const pos = mapManager.getLatLng(x, y);
         const zoom = this.defaultZoom;
