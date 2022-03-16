@@ -2,10 +2,8 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 
 
 import {APIMetaType, HttpMethod} from './_api';
-import {isHoliday, readFromJson} from '../../core/utils';
+import {readFromJson} from '../../core/utils';
 import {PharmacyData} from "../../core/types";
-
-import {foo} from "../../core/google_api";
 
 export type PharmacyAPIResult = {
   meta: APIMetaType,
@@ -26,11 +24,10 @@ export default async function handler(
   }
   try {
    result.data = readFromJson();
-   result.meta.holiday = isHoliday();
-    res
-      .status(200)
-      .json(result)
-    ;
+   res
+       .status(200)
+       .json(result)
+   ;
   } catch (e) {
     console.log(e);
     const statusCode = 400;

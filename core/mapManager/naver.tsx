@@ -4,7 +4,7 @@ import React from "react";
 import {mapInterface, MarkerOption} from "./map.interface";
 import Marker from "../../components/map/marker";
 import initMarkerClustering from "../../components/map/markerClustering/clustering";
-import {LatLngInterface} from "./types";
+import {LatLngInterface, NaverBounds} from "./types";
 import InfoWindow from "../../components/map/infoWindow";
 
 const clusterHtml = renderToString(<MarkerCluster/>);
@@ -27,7 +27,7 @@ export class NaverMap implements mapInterface {
     getInitOptions = () => {
         const coords = [126.96072340180352, 37.54425411510226];
         return {
-            center: this.module.maps.LatLng(coords[1], coords[0]),
+            center: this.getLatLng(coords[0], coords[1]),
             zoom: 14,
             useStyleMap: true,
             zoomControl: false,
@@ -134,7 +134,11 @@ export class NaverMap implements mapInterface {
     }
 
     getLatLng = (x: number, y: number): LatLngInterface => {
-        return new this.module.maps.LatLng(x, y)
+        return new this.module.maps.LatLng(y, x)
+    }
+
+    getBounds = (): NaverBounds => {
+        return this.map.getBounds();
     }
 
     getCenter = (): LatLngInterface => {

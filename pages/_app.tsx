@@ -1,11 +1,15 @@
 import type { AppProps } from 'next/app'
-import React from 'react';
+import React, {FC} from 'react';
 import { ThemeProvider } from "styled-components";
 import {theme} from "../styles/theme";
 import {GlobalStyle} from "../styles/global-styles";
 import Head from "next/head";
 
-
+import reduxWrapper from "../core/store";
+import {END, Task} from "redux-saga";
+// @ts-ignore
+import withReduxSaga from 'next-redux-saga';
+import App from "next/app";
 
 declare global {
   interface Window {
@@ -13,7 +17,7 @@ declare global {
   }
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+const WrappedApp = ({Component, pageProps}: AppProps) => {
     // const [queryClient] = React.useState(() => new QueryClient())
 
     return (
@@ -29,9 +33,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
         <ThemeProvider theme={theme}>
             <GlobalStyle />
-            <Component {...pageProps} />
+                <Component {...pageProps} />
         </ThemeProvider>
         </>
       )
 }
-export default MyApp
+export default reduxWrapper.withRedux(WrappedApp);

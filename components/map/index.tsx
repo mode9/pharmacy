@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Info} from "css.gg/icons/tsx/Info";
 import styled from "styled-components";
 import Script from "next/script";
-import Pharmacy from "../../core/pharmacies";
+import Pharmacy, {filterPharmacies} from "../../core/pharmacies";
 import InfoControl from "./controls/info";
 import LocationControl, {GeolocationHandler} from "./controls/location";
 import FindNear from './controls/findNear';
@@ -12,18 +12,22 @@ import {NaverMap} from "../../core/mapManager/naver";
 import {useTransition} from '@react-spring/web';
 import Modal from "../modal";
 import {distance} from "../../core/mapManager/helpers";
+import {useSelector, useStore} from "react-redux";
+import {LatLngInterface, NaverBounds} from "../../core/mapManager/types";
+import {pharmacyFilterType, State} from "../../core/reducers/types";
+import {filterChanged} from "../../core/reducers/action";
 
 const infoControlHtml = renderToString(<InfoControl />);
 const locationControlHtml = renderToString(<LocationControl />)
 const nearControlHtml = renderToString(<FindNear />);
 
 interface MapOptions {
-    data: Pharmacy[];
+    // data: Pharmacy[];
     naverKey: string | undefined;
     filterInBounds: boolean;
     disableClosed: boolean;
-    isHoliday?: boolean;
-    onIdle: (pharmacies: Pharmacy[], center: any) => void;
+    // isHoliday?: boolean;
+    // onIdle: (pharmacies: Pharmacy[], center: any) => void;
 }
 const TitleIcon = styled(Info)`
   vertical-align: middle;
@@ -35,7 +39,9 @@ const Title = styled.h3`
   vertical-align: middle;
   display: inline-block;
   margin: 0;
-`
+`;
+
+const CONTACT_EMAIL = 'mode9.dev@gmail.com';
 
 const InfoModalBody = function () {
     return (
@@ -44,13 +50,15 @@ const InfoModalBody = function () {
             <p>
                 <u>국립중앙의료원</u>에서 제공하는 심야운영약국 데이터를 기반으로 제작되었으며, 실제약국의 영업시간과는 다를 수 있습니다.
             </p>
+            {/*<p>제보: <a href={`mailto:${CONTACT_EMAIL}`}><u>{CONTACT_EMAIL}</u></a></p>*/}
         </>
     )
 }
 
-const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactElement=> {
+const MapComponent = ((props: MapOptions): React.ReactElement=> {
     const mapRef = useRef<HTMLDivElement>(null);
-    const [pharms, setPharms] = useState<Pharmacy[]>([]);
+    const store = useStore();
+    // const [pharms, setPharms] = useState<Pharmacy[]>([]);
     const [mapLoading, setMapLoading] = useState(true);
     const [initialized, setInitialized] = useState(false);
     const [moduleLoaded, setModuleLoaded] = useState(false);
@@ -64,11 +72,14 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         enter: { opacity: 1, transform: "translateY(0px)" },
         leave: { opacity: 0, transform: "translateY(-40px)" }
     });
+    const state = useSelector<State, State>(state => state);
+    const pharmacies = state.pharmacies.map(row => new Pharmacy(row));
+    const pharmaciesInBounds = filterPharmacies(pharmacies, state.filters);
 
-    React.useImperativeHandle(ref, () => ({
-        hasModuleLoaded: (): boolean => moduleLoaded,
-        getPharmaciesInBounds: () => pharms,
-    }))
+    // React.useImperativeHandle(ref, () => ({
+    //     hasModuleLoaded: (): boolean => moduleLoaded,
+    //     getPharmaciesInBounds: () => pharms,
+    // }))
 
     if (!props.naverKey) throw new Error();
 
@@ -84,35 +95,30 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
     }
 
     function updateMarkers (): void {
-        const mapBounds = mapManager.map.getBounds();
-        let pharmaciesInBounds: Pharmacy[] = [];
+        // let pharmaciesInBounds: Pharmacy[] = [];
 
         mapManager.clearMarkers();
-        for (let i=0; i < props.data.length; i++) {
-            const pharmacy = props.data[i];
-            const latlng = new window.naver.maps.LatLng(pharmacy.y, pharmacy.x);
-            if (mapBounds.hasLatLng(latlng)) {
-                pharmaciesInBounds.push(pharmacy);
-                mapManager.insertMarker({
-                    latLng: latlng,
-                    label: pharmacy.name,
-                    disabled: !pharmacy.isOpen(props.isHoliday),
-                    onClick: handleClickMarker,
-                })
-            }
+        for (let i=0; i < pharmaciesInBounds.length; i++) {
+            const pharmacy = pharmaciesInBounds[i];
+            const latlng = mapManager.getLatLng(pharmacy.x, pharmacy.y);
+            mapManager.insertMarker({
+                latLng: latlng,
+                label: pharmacy.name,
+                disabled: !pharmacy.isOpen(state.filters.isHoliday),
+                onClick: handleClickMarker,
+            })
         }
-        pharmaciesInBounds = pharmaciesInBounds.sort((a, b) => {
-            const center = mapManager.getCenter();
-            const aDistance = distance(a.x, a.y, center.x, center.y);
-            const bDistance = distance(b.x, b.y, center.x, center.y);
-            return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
-        });
-        setPharms(pharmaciesInBounds);
-        props.onIdle && props.onIdle(pharmaciesInBounds, mapManager.getCenter());
+        // pharmaciesInBounds = pharmaciesInBounds.sort((a, b) => {
+        //     const center = mapManager.getCenter();
+        //     const aDistance = distance(a.x, a.y, center.x, center.y);
+        //     const bDistance = distance(b.x, b.y, center.x, center.y);
+        //     return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
+        // });
+        // setPharms(pharmaciesInBounds);
+        // props.onIdle && props.onIdle(pharmaciesInBounds, mapManager.getCenter());
     }
 
     function handleClickMarker (this: any): void {
-        console.log('marker clicked');
         clearActiveMarkers();
         const outerAnchorNode = this.getElement().firstElementChild;
         outerAnchorNode.classList.add('active');
@@ -132,7 +138,9 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         // const findNearContainerNode = this.getElement().firstElementChild;
         // findNearContainerNode?.classList.remove('active');
         this.setMap(null);
+        store.dispatch(filterChanged({bounds: mapManager.getBounds()}));
         updateMarkers();
+
         mapManager.updateMarkerClustering(mapManager.markers);
         mapManager.markerCluster._redraw();
     }
@@ -157,7 +165,7 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         setModalVisible(true);
     }
 
-    async function clearActiveMarkers () {
+    function clearActiveMarkers () {
         document.querySelectorAll('.marker__root.active').forEach((el) => {
             el.classList.remove('active');
         })
@@ -170,13 +178,15 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         _findNearController.name = 'findNear';
         _infoController.name = 'info';
         _locController.name = 'geolocation';
-        updateMarkers();
+        // updateMarkers();
 
         window.naver.maps.Event.addListener(mapManager.map, 'click', clearActiveMarkers);
         window.naver.maps.Event.addListener(mapManager.map, 'bounds_changed', handleBoundsChanged.bind(_findNearController));
         window.naver.maps.Event.addListener(mapManager.map, 'idle', handleIdle);
         mapManager.setMarkerClustering();
         setMapLoading(false);
+        const bounds = mapManager.getBounds();
+        updateFilters({bounds});
     }
 
     function handleBoundsChanged (this: any) {
@@ -187,6 +197,10 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         clearActiveMarkers();
         // if ()
         // findNearContainerNode.classList.toggle('active', zoom >= displayFindNearThrottle);
+    }
+    function updateFilters (filters: pharmacyFilterType) {
+        console.log('updating filter', filters);
+        store.dispatch(filterChanged(filters));
     }
 
     function handleIdle (): void {
@@ -210,6 +224,16 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         naver.maps.Event.once(mapManager.map, 'init_stylemap', handleInitMap)
         setInitialized(true);
     }, [moduleLoaded, initialized]);
+
+    useEffect(() => {
+        if (!mapLoading) {
+            console.log(pharmaciesInBounds);
+            updateMarkers();
+            mapManager.updateMarkerClustering(mapManager.markers);
+            mapManager.markerCluster._redraw();
+        }
+
+    }, [state.filters])
 
     return (
         <>
@@ -237,6 +261,6 @@ const MapComponent = React.forwardRef((props: MapOptions, ref): React.ReactEleme
         </>
     )
 })
-MapComponent.displayName = "MapComponent";
+// MapComponent.displayName = "MapComponent";
 
 export default MapComponent;

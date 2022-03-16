@@ -1,7 +1,9 @@
 import spacetime from 'spacetime';
-import { sleep } from './utils.js';
 import OpeningHours, { TIMEZONE } from './times';
 import type { PharmacyData } from './types';
+import {humanizeDistance} from "./mapManager/helpers";
+import {LatLngInterface} from "./mapManager/types";
+import {pharmacyFilterType} from "./reducers/types";
 
 
 export default class Pharmacy {
@@ -58,5 +60,19 @@ export default class Pharmacy {
   isOpen(holiday: boolean = false): boolean {
     return this.todayOpeningHour(holiday).isOpen();
   }
+
+  humanizedDistance (destination: LatLngInterface): string {
+    return humanizeDistance(this.y, this.x, destination.lat(), destination.lng());
+  }
 }
 
+
+export function filterPharmacies(pharmacies: Pharmacy[], options: pharmacyFilterType): Pharmacy[] {
+  return pharmacies.filter(row => {
+    let inBounds = options.bounds?.hasLatLng({lat: row.y, lng: row.x});
+    if (options.showClosed) {
+      return inBounds;
+    }
+    return inBounds && row.isOpen(options.isHoliday);
+  });
+}

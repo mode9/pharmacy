@@ -1,4 +1,5 @@
 import Pharmacy from "./pharmacies";
+import {APIMetaType} from "../pages/api/_api";
 
 type CsvRowType = {
   약국명: string;
@@ -52,4 +53,17 @@ type Holiday = {
   start: string;
   summary: string;
 }
-export type { OpeningHoursType, CsvRowType, PharmacyData, PharmacyItemType, Holiday };
+type PharmacyAPIResult = {
+  meta: APIMetaType,
+  data: PharmacyData[] | [],
+}
+type HolidayAPIResult = {
+  meta: APIMetaType,
+  data: Holiday[] | [],
+}
+
+type MapCenter = {
+  x: number;
+  y: number;
+}
+export type { OpeningHoursType, CsvRowType, PharmacyData, PharmacyItemType, Holiday, PharmacyAPIResult, HolidayAPIResult, MapCenter };
