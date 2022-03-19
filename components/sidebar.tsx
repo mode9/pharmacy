@@ -4,6 +4,7 @@ import {State} from "../core/reducers/types";
 import Pharmacy, {filterPharmacies} from "../core/pharmacies";
 import React from "react";
 import {Mail} from "css.gg/icons/all";
+import Dropdown from "./dropdown";
 
 
 const EMAIL_ADDRESS = 'mode.dev@gmail.com';
@@ -34,10 +35,10 @@ const Footer = styled.div`
 const GridRow = styled.div`
   width: 100%;
   padding: 0.7rem 1rem;
-  border-radius: 5px;
+  border-radius: 10px;
   display: flex;
   &:hover {
-    background-color: #dddbda;
+    background-color: #f0f0f0;
   }
 `;
 
@@ -93,6 +94,7 @@ export default function Sidebar () {
             {/*<GridHeader>*/}
             {/*    <ContentDescription>검색결과 총 15 개</ContentDescription>*/}
             {/*</GridHeader>*/}
+            <Dropdown />
             {pharmaciesInBounds.map((row, idx) => (
                 <GridRow key={idx}>
                     <ContentColumn>
