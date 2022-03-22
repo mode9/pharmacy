@@ -29,7 +29,7 @@ const Header = styled.div`
 
 const Footer = styled.div`
   text-align: center;
-  margin: 5rem 0 2rem 0;
+  margin: 4rem 0 2rem 0;
 `
 
 const GridRow = styled.div`
@@ -112,14 +112,18 @@ export default function Sidebar () {
                 </GridRow>
             ))}
             <Footer>
-                <div style={{marginBottom: '1rem'}}>
+                {/*<div style={{marginBottom: '1rem'}}>*/}
+                {/*    */}
+                {/*    <BorderCircle >*/}
+                {/*        <Mail />*/}
+                {/*    </BorderCircle>*/}
+                {/*    </a>*/}
+                {/*</div>*/}
+                <span style={{fontSize: '13px'}}>&copy;&nbsp;
                     <a href={`mailto:${EMAIL_ADDRESS}?Subject=[심야약국] 문의`}>
-                    <BorderCircle >
-                        <Mail />
-                    </BorderCircle>
+                        <span style={{textDecoration: 'underline'}}>mode9</span>
                     </a>
-                </div>
-                <span style={{fontSize: '13px'}}>&copy; mode9</span>
+                </span>
             </Footer>
         </Wrapper>
     )

@@ -24,4 +24,5 @@ export type NaverBounds = {
 
     hasLatLng: (latlng: LatLngInterface|LatLngObjectLiteral) => boolean;
     getCenter: () => LatLngInterface;
+    equals: (bounds: NaverBounds) => boolean;
 }

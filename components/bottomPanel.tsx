@@ -207,8 +207,8 @@ function BottomPanel () {
                         <span style={{fontSize: '12px', color: '#6B6B6B'}}>{`주변에 ${pharmaciesInBounds.length} 개의 검색결과가 있습니다.`}</span>
                     </div>
                     <GridHeaderAction>
-                        <SortIcon />
-                        <Label>거리 순</Label>
+                        {/*<SortIcon />*/}
+                        {/*<Label>거리 순</Label>*/}
                     </GridHeaderAction>
                 </GridHeader>
                 <GridBody ref={gridBodyRef} scrollable={scrollable}>
