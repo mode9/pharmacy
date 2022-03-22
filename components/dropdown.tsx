@@ -1,9 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
 
 import styled from "styled-components";
+import {useStore} from "react-redux";
+import {sortChanged} from "../core/reducers/action";
 
 interface DropdownWrapperProps {
     $open: boolean;
+    $mini: boolean;
 }
 
 interface DropdownItemDotProps {
@@ -23,11 +26,11 @@ type MenuItemInterface = {
     label: string;
     selected: boolean;
     default: boolean;
-    key: string | number;
+    key: string;
 }
 
 const DropdownWrapper = styled.div<DropdownWrapperProps>`
-  width: 150px;
+  width: ${props => props.$mini ? '75px' : '150px' };
   border-radius: 7px;
   background-color: white;
   border: 1px solid #dddbda;
@@ -125,9 +128,10 @@ function useOutsideHandler (ref: React.RefObject<HTMLElement>): [boolean, React.
     return [open, setOpen];
 }
 
-export default function Dropdown () {
+export default function Dropdown ({ mini }: {mini: boolean}) {
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const [open, setOpen] = useOutsideHandler(dropdownRef);
+    const store = useStore();
     const [menuItems, setMenuItems] = useState<MenuItemInterface[]>([
         {
             "label": "가까운 순",
@@ -147,16 +151,16 @@ export default function Dropdown () {
         setOpen(!open);
     }
 
-    function handleSelect(key: string|number) {
+    function handleSelect(item: MenuItemInterface) {
         function inner() {
             setMenuItems((state) => {
                 let newState = [...state];
                 for (let i=0; i < newState.length; i++) {
-                    newState[i].selected = newState[i].key === key;
+                    newState[i].selected = newState[i].key === item.key;
                 }
                 return newState;
             })
-
+            store.dispatch(sortChanged(item.key));
         }
         return inner;
     }
@@ -164,14 +168,14 @@ export default function Dropdown () {
     // TODO: UI 수정
 
     return (
-        <DropdownWrapper $open={open} onClick={handleClick} ref={dropdownRef}>
+        <DropdownWrapper $open={open} onClick={handleClick} ref={dropdownRef} $mini={mini}>
             <DropdownHeader>
                 {menuItems.filter(item => item.selected)[0].label}
                 <ChevronRight $open={open} />
             </DropdownHeader>
             <DropdownItemContainer $open={open}>
                 {menuItems.map(item => (
-                    <DropdownItem key={item.key} onClick={handleSelect(item.key)}>
+                    <DropdownItem key={item.key} onClick={handleSelect(item)}>
                         <DropdownItemDot $selected={item.selected} $key={item.key} />
                         {item.label}
                     </DropdownItem>
@@ -180,4 +184,8 @@ export default function Dropdown () {
         </DropdownWrapper>
     )
 
+}
+
+Dropdown.defaultProps = {
+    mini: false,
 }

@@ -1,3 +1,6 @@
+import {PharmacyData} from "../types";
+import {LatLngInterface} from "./types";
+
 export function distance (lat1: number, lng1: number, lat2:number, lng2:number): number {
     // in Kilometers
     let radlat1 = Math.PI * lat1 / 180;
@@ -19,4 +22,12 @@ export function humanizeDistance (lat1: number, lng1: number, lat2:number, lng2:
     } else {
         return (Math.ceil((dist * 1000) / 100) * 100).toString() + 'm';
     }
+}
+
+export const sortWithDistance = (pharmacies: PharmacyData[], center: LatLngInterface) => {
+    return pharmacies.sort((a, b) => {
+        const aDistance = distance(a.x, a.y, center.x, center.y);
+        const bDistance = distance(b.x, b.y, center.x, center.y);
+        return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
+    });
 }
