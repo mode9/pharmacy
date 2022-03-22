@@ -1,15 +1,10 @@
-import {FILTER_CHANGED, RECEIVE_DATA, SORT_CHANGED} from "./action";
+import {FILTER_CHANGED, ITEM_SELECTED, RECEIVE_DATA, SORT_CHANGED} from "./action";
 import {State} from "./types";
 import {HYDRATE} from "next-redux-wrapper";
 import {AnyAction} from "redux";
-import {PharmacyData} from "../types";
 import {sortWithDistance} from "../mapManager/helpers";
 
 export const initialState: State = {pharmacies: [], filters: {bounds: null, showClosed: true, isHoliday: false}};
-
-const sortPharmaciesByDistanceAsc = (a: PharmacyData, b: PharmacyData) => {
-
-}
 
 const appReducer = (state=initialState, action: AnyAction) => {
     let nextState;
@@ -62,6 +57,11 @@ const appReducer = (state=initialState, action: AnyAction) => {
                     break;
             }
             return newState;
+        case ITEM_SELECTED:
+            return {
+                ...state,
+                selected: action.payload,
+            }
         default:
             return state;
     }

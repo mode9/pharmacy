@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 
 import styled from "styled-components";
 import {useStore} from "react-redux";
-import {sortChanged} from "../core/reducers/action";
+import {changeSorting} from "../core/reducers/action";
 
 interface DropdownWrapperProps {
     $open: boolean;
@@ -160,7 +160,7 @@ export default function Dropdown ({ mini }: {mini: boolean}) {
                 }
                 return newState;
             })
-            store.dispatch(sortChanged(item.key));
+            store.dispatch(changeSorting(item.key));
         }
         return inner;
     }

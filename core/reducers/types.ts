@@ -10,4 +10,5 @@ export type pharmacyFilterType = {
 export type State = {
     pharmacies: PharmacyData[];
     filters: pharmacyFilterType;
+    selected?: PharmacyData;
 }

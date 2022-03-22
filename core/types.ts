@@ -33,6 +33,7 @@ type PharmacyData = {
   holiday: OpeningHoursType;
   x: number;
   y: number;
+  id?: number;
   isOpen: () => boolean;
   isHoliday?: boolean;
   [key: string]: string | number | OpeningHoursType | undefined | Function | boolean;

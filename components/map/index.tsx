@@ -75,8 +75,10 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
     const state = useSelector<State, State>(state => state);
     const pharmacies = state.pharmacies.map(row => new Pharmacy(row));
     const pharmaciesInBounds = filterPharmacies(pharmacies, state.filters);
+    const selectedPharmacy = state.selected;
+    console.log('selected: ', selectedPharmacy)
 
-    // React.useImperativeHandle(ref, () => ({
+        // React.useImperativeHandle(ref, () => ({
     //     hasModuleLoaded: (): boolean => moduleLoaded,
     //     getPharmaciesInBounds: () => pharms,
     // }))
@@ -113,7 +115,7 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         //     const aDistance = distance(a.x, a.y, center.x, center.y);
         //     const bDistance = distance(b.x, b.y, center.x, center.y);
         //     return aDistance > bDistance ? 1 : aDistance < bDistance ? -1 : 0;
-        // });
+        // });`
         // setPharms(pharmaciesInBounds);
         // props.onIdle && props.onIdle(pharmaciesInBounds, mapManager.getCenter());
     }
@@ -122,6 +124,7 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         clearActiveMarkers();
         const outerAnchorNode = this.getElement().firstElementChild;
         outerAnchorNode.classList.add('active');
+        console.log('marker clicked', this);
         // if (this.infoWindow) {
         //     if (this.infoWindow.getMap()) {
         //         this.infoWindow.close();

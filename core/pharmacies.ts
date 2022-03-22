@@ -21,6 +21,7 @@ export default class Pharmacy {
   holiday: OpeningHours;
   x: number;
   y: number;
+  id?: number;
   loading: boolean = true;
 
   constructor (data: PharmacyData) {
@@ -38,6 +39,7 @@ export default class Pharmacy {
     this.holiday = new OpeningHours(data.holiday);
     this.x = data.x;
     this.y = data.y;
+    this.id = data.id;
   }
 
   getOpeningHour(weekDay: number): OpeningHours {
