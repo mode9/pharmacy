@@ -42,4 +42,6 @@ export const GlobalStyle = createGlobalStyle`
   #find-near-container.active { display: block; }
 
   .marker__root.active .marker__outer_anchor { transform: scale(2) }
+  
+  #filter-controller button.active {background: #000; color: #fff; }
 `;

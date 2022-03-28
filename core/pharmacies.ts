@@ -44,13 +44,13 @@ export default class Pharmacy {
 
   getOpeningHour(weekDay: number): OpeningHours {
     return {
-      0: this.monday,
-      1: this.tuesday,
-      2: this.wednesday,
-      3: this.thursday,
-      4: this.friday,
-      5: this.saturday,
-      6: this.sunday,
+      0: this.sunday,
+      1: this.monday,
+      2: this.tuesday,
+      3: this.wednesday,
+      4: this.thursday,
+      5: this.friday,
+      6: this.saturday,
     }[weekDay] || this.holiday;
   }
 

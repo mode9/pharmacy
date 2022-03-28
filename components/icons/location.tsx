@@ -3,7 +3,6 @@ import {StyledProps} from "styled-components";
 
 
 export const Location = ({width, height, ...attr}: StyledProps<any>) => {
-    console.log(attr)
     return (
         <Svg aria-hidden="true" role="img" viewBox="0 0 24 24" width={width} height={height} fill="currentColor" {...attr}>
             <path d="M12 13.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>

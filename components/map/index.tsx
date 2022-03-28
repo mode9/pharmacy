@@ -5,7 +5,7 @@ import styled from "styled-components";
 import Script from "next/script";
 import Pharmacy, {filterPharmacies} from "../../core/pharmacies";
 import InfoControl from "./controls/info";
-import LocationControl, {GeolocationHandler} from "./controls/location";
+import LocationControl from "./controls/location";
 import FindNear from './controls/findNear';
 import Spinner from "../spinner";
 import {NaverMap} from "../../core/mapManager/naver";
@@ -18,9 +18,12 @@ import {selectPharmacy} from "../../core/reducers/selector";
 import {RootState} from "../../core/reducers";
 import PharmacyDetailModal from "./PharmacyDetail";
 import InfoWindowModal from "./infoWindow";
+import {GeolocationHandler} from "../../core/mapManager/geolocation";
+import FilterButton from "./controls/filterButton";
 
 const infoControlHtml = renderToString(<InfoControl />);
 const locationControlHtml = renderToString(<LocationControl />)
+const filterControlHtml = renderToString(<FilterButton />)
 const nearControlHtml = renderToString(<FindNear />);
 
 interface MapOptions {
@@ -153,6 +156,19 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         setModalVisible(true);
     }
 
+    function handleFilterClick (this: any) {
+        const buttonNode = this.getElement().querySelector('button');
+        if (buttonNode.classList.contains('active')) {
+            buttonNode.classList.remove('active');
+            store.dispatch(filterChanged({showClosed: true}));
+            buttonNode.firstElementChild.innerText = '닫은 약국 숨김';
+        } else {
+            buttonNode.classList.add('active');
+            store.dispatch(filterChanged({showClosed: false}));
+            buttonNode.firstElementChild.innerText = '모든 약국 보기';
+        }
+    }
+
     function clearActiveMarkers () {
         document.querySelectorAll('.marker__root.active').forEach((el) => {
             el.classList.remove('active');
@@ -164,9 +180,11 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         const _findNearController = mapManager.insertCustomControl(nearControlHtml, {position: mapManager.module.maps.Position.BOTTOM_CENTER, hidden: true}, handleClickNear);
         const _infoController = mapManager.insertCustomControl(infoControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickInfo);
         const _locController = mapManager.insertCustomControl(locationControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickGeolocation);
+        const _filterController = mapManager.insertCustomControl(filterControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleFilterClick);
         _findNearController.name = 'findNear';
         _infoController.name = 'info';
         _locController.name = 'geolocation';
+        _filterController.name = 'filter';
         // updateMarkers();
 
         window.naver.maps.Event.addListener(mapManager.map, 'click', clearActiveMarkers);
@@ -233,19 +251,6 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
                 .catch(console.error);
         }
     }, [activePharmacy])
-
-    // useEffect(() => {
-    //     if (selectedPharmacy) {
-    //         // const latlng = mapManager.getLatLng(selectedPharmacy.x, selectedPharmacy.y);
-    //         console.log(selectedPharmacy)
-    //         const marker = mapManager.getMarker(selectedPharmacy.id);
-    //         const latlng = marker.getPosition();
-    //         mapManager.panTo(latlng, 200);
-    //         mapManager.setZoom(16, false)
-    //             .then(() => activateMarker(marker))
-    //             .catch(console.error);
-    //     }
-    // }, [selectedPharmacy])
 
     return (
         <>
