@@ -46,14 +46,10 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
     const state = useSelector<RootState, State>(state => state.pharmacies);
     const selectorState = useSelector<RootState, SelectorState>(state => state.selector);
     const selectedPharmacy = selectorState.selected ? new Pharmacy(selectorState.selected) : undefined;
+    const activePharmacy = selectorState.active;
     const pharmacies = state.pharmacies;
     const pharmaciesInBounds = filterPharmacies(pharmacies.map(row => new Pharmacy(row)), state.filters);
     const isHoliday = state.filters.isHoliday || false;
-    const selectTransitions = useTransition(selectedPharmacy , {
-        from: { opacity: 0, transform: "translateY(-40px)" },
-        enter: { opacity: 1, transform: "translateY(0px)" },
-        leave: { opacity: 0, transform: "translateY(-40px)" }
-    });
 
     if (!props.naverKey) throw new Error();
 
@@ -93,10 +89,14 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         // props.onIdle && props.onIdle(pharmaciesInBounds, mapManager.getCenter());
     }
 
+    function activateMarker (marker: any) {
+        const outerAnchorNode = marker.getElement().firstElementChild;
+        outerAnchorNode.classList.add('active');
+    }
+
     function handleClickMarker (this: any): void {
         clearActiveMarkers();
-        const outerAnchorNode = this.getElement().firstElementChild;
-        outerAnchorNode.classList.add('active');
+        activateMarker(this)
         handleSelectPharmacy(this.id);
         // if (this.infoWindow) {
         //     if (this.infoWindow.getMap()) {
@@ -223,6 +223,30 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
 
     }, [state.filters])
 
+    useEffect(() => {
+        if (activePharmacy) {
+            const marker = mapManager.getMarker(activePharmacy.id);
+            const latlng = marker.getPosition();
+            mapManager.panTo(latlng, 200)
+                .then(() => mapManager.setZoom(16, true))
+                .then(() => activateMarker(marker))
+                .catch(console.error);
+        }
+    }, [activePharmacy])
+
+    // useEffect(() => {
+    //     if (selectedPharmacy) {
+    //         // const latlng = mapManager.getLatLng(selectedPharmacy.x, selectedPharmacy.y);
+    //         console.log(selectedPharmacy)
+    //         const marker = mapManager.getMarker(selectedPharmacy.id);
+    //         const latlng = marker.getPosition();
+    //         mapManager.panTo(latlng, 200);
+    //         mapManager.setZoom(16, false)
+    //             .then(() => activateMarker(marker))
+    //             .catch(console.error);
+    //     }
+    // }, [selectedPharmacy])
+
     return (
         <>
             <Script
@@ -234,7 +258,13 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
             {mapLoading && <Spinner />}
             <div id="map" ref={mapRef} >
                 <InfoWindowModal visible={modalVisible} onClose={() => setModalVisible(false)} />
-                <PharmacyDetailModal pharmacy={selectedPharmacy} isHoliday={isHoliday} onClose={clearSelectedPharmacy} />
+                {selectedPharmacy &&
+                    <PharmacyDetailModal
+                        pharmacy={selectedPharmacy}
+                        isHoliday={isHoliday}
+                        onClose={clearSelectedPharmacy}
+                    />
+                }
             </div>
 
 

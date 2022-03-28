@@ -15,6 +15,7 @@ export type State = {
 
 export type SelectorState = {
     selected: PharmacyData | null;
+    active: PharmacyData | null;
 }
 
 export type CombinedStateType = {

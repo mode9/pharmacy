@@ -7,11 +7,12 @@ import styled from "styled-components";
 import {theme} from "../styles/theme";
 import Pharmacy, {filterPharmacies} from "../core/pharmacies";
 import {FormatLineHeight} from "css.gg/icons/all";
-import {distance, humanizeDistance} from "../core/mapManager/helpers";
 import {useSelector, useStore} from "react-redux";
 import {State} from "../core/reducers/types";
 import {RootState} from "../core/reducers";
-import {selectPharmacy} from "../core/reducers/selector";
+import {activatePharmacy, selectPharmacy} from "../core/reducers/selector";
+import {Location} from "./icons/location";
+import {HoverContainer} from "./icons/base";
 
 const HEIGHT = 500;
 const MIN_HEIGHT = 92;
@@ -101,6 +102,7 @@ const GridRow = styled.div`
   padding: 0.7rem 1rem;
   border-bottom: 1px solid #dddbda;
   cursor: pointer;
+  display: flex;
   &:last-of-type {
     margin-bottom: 2rem;
     border-bottom: unset;
@@ -108,7 +110,7 @@ const GridRow = styled.div`
 `;
 
 const ContentColumn = styled.div`
-
+    width: 80%;
 `;
 
 const ContentTitle = styled.h5`
@@ -122,11 +124,14 @@ const ContentDescription = styled.div`
 `;
 
 const ContentDescriptionAddress = styled.p`
-  width: 67.5%;
+  width: 100%;
 `
 
 const ActionColumn = styled.div`
   width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: right;
 `;
 
 const AccentDescription = styled.span`
@@ -148,6 +153,12 @@ function BottomPanel () {
 
     function handleClick (pharmacyId: number) {
         store.dispatch(selectPharmacy(pharmacies.find(row => row.id === pharmacyId) || null))
+    }
+
+    function handleLocationClick(e: React.MouseEvent<HTMLButtonElement>, pharmacy: Pharmacy) {
+        e.stopPropagation();
+        close();
+        store.dispatch(activatePharmacy(pharmacy.toObject()));
     }
 
     useEffect(() => {
@@ -232,7 +243,11 @@ function BottomPanel () {
                                     <ContentDescriptionAddress>{(row.address_road || row.address)?.split(' ').splice(1).join(' ')}</ContentDescriptionAddress>
                                 </ContentDescription>
                             </ContentColumn>
-                            <ActionColumn></ActionColumn>
+                            <ActionColumn>
+                                <HoverContainer onClick={(e) => {handleLocationClick(e, row)}}>
+                                    <Location />
+                                </HoverContainer>
+                            </ActionColumn>
                         </GridRow>
                     ))}
 

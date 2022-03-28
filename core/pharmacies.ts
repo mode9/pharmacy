@@ -67,6 +67,26 @@ export default class Pharmacy {
   humanizedDistance (destination: LatLngInterface): string {
     return humanizeDistance(this.y, this.x, destination.lat(), destination.lng());
   }
+
+  toObject (): PharmacyData {
+    return {
+      name: this.name,
+      phone: this.phone,
+      address_road: this.address_road,
+      address: this.address,
+      monday: {opening: this.monday.opening, closing: this.monday.closing},
+      tuesday: {opening: this.tuesday.opening, closing: this.tuesday.closing},
+      wednesday: {opening: this.wednesday.opening, closing: this.wednesday.closing},
+      thursday: {opening: this.thursday.opening, closing: this.thursday.closing},
+      friday: {opening: this.friday.opening, closing: this.friday.closing},
+      saturday: {opening: this.saturday.opening, closing: this.saturday.closing},
+      sunday: {opening: this.sunday.opening, closing: this.sunday.closing},
+      holiday: {opening: this.holiday.opening, closing: this.holiday.closing},
+      x: this.x,
+      y: this.y,
+      id: this.id,
+    }
+  }
 }
 
 

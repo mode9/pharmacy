@@ -108,6 +108,10 @@ export class NaverMap implements mapInterface {
         this.markers = this.markers.filter((row) => (!row.getPosition().equals(marker.getPosition())));
     }
 
+    getMarker = (id: number): any => {
+        return this.markers.find(row => row.id === id);
+    }
+
     setMarkerClustering = () => {
         this.markerCluster = initMarkerClustering(this.module, {
             minClusterSize: 2,
@@ -154,30 +158,34 @@ export class NaverMap implements mapInterface {
         return this.map.getZoom();
     }
 
-    setZoom = (zoom: number): Promise<null> => {
+    setZoom = (zoom: number, animate: boolean = true): Promise<void> => {
         return new Promise((resolve) => {
-            this.addListenerOnce('idle', resolve);
-            // @ts-ignore
-            this.map.setZoom(zoom, true);
+            if (this.getZoom() === zoom) {
+                console.log('same zoom')
+                resolve();
+            } else {
+                this.addListenerOnce('idle', resolve);
+                // @ts-ignore
+                this.map.setZoom(zoom, animate);
+            }
         })
     }
 
-    panTo = (latlng: any): Promise<null> => {
+    panTo = (latlng: any, duration: number = 500): Promise<void> => {
         return new Promise((resolve) => {
-            this.addListenerOnce('idle', resolve);
-            this.map.panTo(latlng);
+            if (this.getCenter().equals(latlng)) {
+                resolve();
+            } else {
+                this.addListenerOnce('idle', resolve);
+                this.map.panTo(latlng, {duration});
+            }
         });
     }
 
-    getInfoWindowHtml = (marker: any): string => {
-        return renderToString(<InfoWindow />);
-    }
-
-    createInfoWindow = (marker: any) => {
-        return new this.module.maps.InfoWindow({content: this.getInfoWindowHtml(marker)});
-    }
-
-    clearInfoWindow = (infoWindow: any) => {
-        infoWindow?.close();
+    updateBy = (latlng: any, zoom: number) => {
+        return new Promise((resolve) => {
+            this.addListenerOnce('idle', resolve);
+            this.map.updateBy(latlng, zoom);
+        })
     }
 }

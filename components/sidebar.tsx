@@ -2,11 +2,13 @@ import styled from "styled-components";
 import {useSelector, useStore} from "react-redux";
 import {State} from "../core/reducers/types";
 import Pharmacy, {filterPharmacies} from "../core/pharmacies";
-import React from "react";
-import {Mail} from "css.gg/icons/all";
+import React, {MouseEventHandler} from "react";
+import {Controller, Mail} from "css.gg/icons/all";
 import Dropdown from "./dropdown";
 import {RootState} from "../core/reducers";
-import {selectPharmacy} from "../core/reducers/selector";
+import {activatePharmacy, selectPharmacy} from "../core/reducers/selector";
+import {Location} from "./icons/location";
+import {HoverContainer} from "./icons/base";
 
 
 const EMAIL_ADDRESS = 'mode.dev@gmail.com';
@@ -39,10 +41,10 @@ const GridRow = styled.div`
   padding: 0.7rem 1rem;
   border-radius: 10px;
   display: flex;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
+  //cursor: pointer;
+  //&:hover {
+  //  background-color: #f0f0f0;
+  //}
 `;
 
 const GridHeader = styled.div`
@@ -57,6 +59,10 @@ const ContentColumn = styled.div`
 const ContentTitle = styled.h4`
   margin: 0;
   font-size: 15px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ContentDescription = styled.div`
@@ -66,11 +72,14 @@ const ContentDescription = styled.div`
 `;
 
 const ContentDescriptionAddress = styled.p`
-  width: 67.5%;
+  width: 100%;
 `
 
 const ActionColumn = styled.div`
   width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: right;
 `;
 
 const BorderCircle = styled.div`
@@ -78,6 +87,9 @@ const BorderCircle = styled.div`
   border-radius: 50%;
   padding: 10px;
   display: inline-block;
+  text-align: center;
+  
+  
 `;
 
 export default function Sidebar () {
@@ -89,6 +101,13 @@ export default function Sidebar () {
 
     function handleClick (pharmacyId: number) {
         store.dispatch(selectPharmacy(pharmacies.find(row => row.id === pharmacyId) || null))
+    }
+
+    function handleLocationClick(e: React.MouseEvent<HTMLButtonElement>, pharmacy: Pharmacy) {
+        e.stopPropagation();
+        console.log(e);
+
+        store.dispatch(activatePharmacy(pharmacy.toObject()));
     }
 
     return (
@@ -104,9 +123,13 @@ export default function Sidebar () {
             {/*</GridHeader>*/}
             <Dropdown />
                 {pharmaciesInBounds.map((row, idx) => (
-                <GridRow key={idx} onClick={() => handleClick(row.id)}>
+                <GridRow key={idx}>
                     <ContentColumn>
-                        <ContentTitle>{row.name}</ContentTitle>
+                        <ContentTitle>
+                            <a href='#' onClick={() => handleClick(row.id)}>
+                                {row.name}
+                            </a>
+                        </ContentTitle>
                         <ContentDescription>
                             <span style={{ width: '35px', display: 'inline-block' }}>{center ? row.humanizedDistance(center) : "알수없음"}</span>
                             <span className="delimiter" style={{padding: '0 2px'}}>&#8226;</span>
@@ -116,6 +139,9 @@ export default function Sidebar () {
                         </ContentDescription>
                     </ContentColumn>
                     <ActionColumn>
+                        <HoverContainer onClick={(e) => {handleLocationClick(e, row)}}>
+                            <Location />
+                        </HoverContainer>
                     </ActionColumn>
                 </GridRow>
             ))}

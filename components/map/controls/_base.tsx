@@ -5,7 +5,22 @@ export const Svg = styled.svg`
   user-select:none;
   vertical-align:middle;
   overflow:visible;
-  margin-right: 3px;
+  width: ${props => {
+      if (!props.width) {
+          return '18px';
+      } else if (typeof props.width === 'number') {
+          return `${props.width}px`;
+      } 
+      return props.width;
+  }};
+  height: ${props => {
+      if (!props.width) {
+          return '18px';
+      } else if (typeof props.width === 'number') {
+          return `${props.width}px`;
+      }
+      return props.width;
+  }};
 `;
 
 
