@@ -1,22 +1,27 @@
-import {AnyAction, applyMiddleware, compose, createStore, Store} from "redux";
-import {Context, createWrapper, HYDRATE} from "next-redux-wrapper";
-import {Holiday, PharmacyData} from "./types";
-import rootReducer from "./reducers";
-import {composeWithDevTools} from "redux-devtools-extension";
-import {State} from "./reducers/types";
+import {Store} from "redux";
+import {createWrapper} from "next-redux-wrapper";
+import { configureStore } from "@reduxjs/toolkit";
+import rootReducer, { RootState } from "./reducers";
 
 
-const configureStore = () => {
-    const middlewares = [];
-    const enhancer = process.env.NODE_ENV === 'production'
-        ? compose(applyMiddleware())
-        : composeWithDevTools(
-            applyMiddleware(),
-        );
-    return createStore(rootReducer, enhancer);
-    // store.sagaTask = sagaMiddleware.run(rootSaga);
-}
+const createStore = () => configureStore({
+    // @ts-ignore
+    reducer: rootReducer,
+    // @ts-ignore
+    middleware: (getDefaultMiddleware) => {
+        // getDefaultMiddleware().concat(logger);
+        return getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['pharmacies/filterChanged'],
+                ignoredPaths: ['pharmacies.filters.bounds'],
+            }
+        })
+    },
+    devTools: process.env.NODE_ENV !== 'production',
+})
 
-const wrapper = createWrapper<Store<State>>(configureStore, {debug: false})
+const wrapper = createWrapper<Store<RootState>>(createStore, {
+    debug: process.env.NODE_ENV !== 'production',
+})
 
 export default wrapper;

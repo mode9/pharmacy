@@ -1,15 +1,11 @@
 import type { AppProps } from 'next/app'
-import React, {FC} from 'react';
+import React from 'react';
 import { ThemeProvider } from "styled-components";
 import {theme} from "../styles/theme";
-import {GlobalStyle} from "../styles/global-styles";
+import {GlobalStyle} from "../styles/global-styles";  // @ts-ignore
 import Head from "next/head";
 
 import reduxWrapper from "../core/store";
-import {END, Task} from "redux-saga";
-// @ts-ignore
-import withReduxSaga from 'next-redux-saga';
-import App from "next/app";
 
 declare global {
   interface Window {
@@ -18,8 +14,6 @@ declare global {
 }
 
 const WrappedApp = ({Component, pageProps}: AppProps) => {
-    // const [queryClient] = React.useState(() => new QueryClient())
-
     return (
         <>
             <Head>

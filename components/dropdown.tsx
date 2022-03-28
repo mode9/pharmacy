@@ -2,7 +2,8 @@ import React, {useEffect, useRef, useState} from "react";
 
 import styled from "styled-components";
 import {useStore} from "react-redux";
-import {changeSorting} from "../core/reducers/action";
+import {changeSorting} from "../core/reducers/pharmacies";
+import {ChevronRight} from "./chevron";
 
 interface DropdownWrapperProps {
     $open: boolean;
@@ -15,10 +16,6 @@ interface DropdownItemDotProps {
 }
 
 interface DropdownItemContainerProps {
-    $open: boolean;
-}
-
-interface ChevronRightProps {
     $open: boolean;
 }
 
@@ -86,26 +83,6 @@ const DropdownItemDot = styled.span<DropdownItemDotProps>`
   border-radius: 50%;
   margin-right: 6px;
   margin-bottom: 2px;
-`;
-
-const ChevronRight = styled.span<ChevronRightProps>`
-  display: inline-block;
-  margin-left: auto;
-  &:before {
-    border-style: solid;
-    border-width: 0.1em 0.1em 0 0;
-    content: '';
-    display: inline-block;
-    height: 0.45em;
-    //left: 0.15em;
-    position: relative;
-    top: 0.3em;
-    right: 0.3em;
-    transform: ${props => props.$open ? 'rotate(135deg)' : 'rotate(45deg)'};
-    vertical-align: top;
-    width: 0.45em;
-    transition: transform 100ms ease-in-out;
-  }
 `;
 
 function useOutsideHandler (ref: React.RefObject<HTMLElement>): [boolean, React.Dispatch<React.SetStateAction<boolean>>] {

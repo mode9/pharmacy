@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as csv from 'fast-csv';
-import { stringToTimeObject } from './times';
-import type { CsvRowType, PharmacyData } from './types';
+import { stringToTimeObject } from '../core/times';
+import type { CsvRowType, PharmacyData } from '../core/types';
 
 
 var fs = require('fs');

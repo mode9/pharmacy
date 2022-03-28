@@ -11,14 +11,7 @@ export function readFromJson(): PharmacyData[] {
   var fs = require('fs');
   const filename: string = path.resolve(process.cwd(), 'data_new.json');
   const rawData = fs.readFileSync(filename, 'utf-8');
-  var data = JSON.parse(rawData);
-  for (let i=0; i < data.length; i++) {
-    data[i].id = i;
-  }
-  var jsonData = JSON.stringify(data);
-  fs.writeFileSync(filename, jsonData);
-
-  return data
+  return JSON.parse(rawData);
 }
 
 export function getAllHolidays(): Holiday[] {

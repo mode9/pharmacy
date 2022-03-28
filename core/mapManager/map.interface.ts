@@ -2,6 +2,7 @@ export type MarkerOption = {
     latLng: any,
     label: string | undefined,
     disabled?: boolean,
+    id?: number,
     onClick?: () => any,
 }
 

@@ -21,7 +21,7 @@ export default class Pharmacy {
   holiday: OpeningHours;
   x: number;
   y: number;
-  id?: number;
+  id: number;
   loading: boolean = true;
 
   constructor (data: PharmacyData) {
@@ -55,6 +55,7 @@ export default class Pharmacy {
   }
 
   todayOpeningHour(holiday: boolean = false): OpeningHours {
+    // TODO: 00시 지난 경우, 다음날짜의 영업시간이 적용됨. 예. 월요일 0시 1분은 일요일이 아닌 월요일 날짜가 적용되어 보임.
     const weekDay: number = holiday ? -1 : spacetime.now(TIMEZONE).day();
     return this.getOpeningHour(weekDay);
   }

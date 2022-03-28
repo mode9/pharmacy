@@ -7,7 +7,7 @@ import Sidebar from "../components/sidebar";
 
 import {HolidayAPIResult, PharmacyAPIResult, PharmacyData} from "../core/types";
 import reduxWrapper from "../core/store";
-import {filterChanged, receivePharmacyData} from "../core/reducers/action";
+import {filterChanged, receivePharmacyData} from "../core/reducers/pharmacies";
 import {isHoliday} from "../core/utils";
 
 

@@ -11,11 +11,13 @@ import Spinner from "../spinner";
 import {NaverMap} from "../../core/mapManager/naver";
 import {useTransition} from '@react-spring/web';
 import Modal from "../modal";
-import {distance} from "../../core/mapManager/helpers";
 import {useSelector, useStore} from "react-redux";
-import {LatLngInterface, NaverBounds} from "../../core/mapManager/types";
-import {pharmacyFilterType, State} from "../../core/reducers/types";
-import {filterChanged} from "../../core/reducers/action";
+import {State, pharmacyFilterType, SelectorState} from "../../core/reducers/types";
+import {filterChanged} from "../../core/reducers/pharmacies";
+import {selectPharmacy} from "../../core/reducers/selector";
+import {RootState} from "../../core/reducers";
+import PharmacyDetailModal from "./PharmacyDetail";
+import InfoWindowModal from "./infoWindow";
 
 const infoControlHtml = renderToString(<InfoControl />);
 const locationControlHtml = renderToString(<LocationControl />)
@@ -29,59 +31,29 @@ interface MapOptions {
     // isHoliday?: boolean;
     // onIdle: (pharmacies: Pharmacy[], center: any) => void;
 }
-const TitleIcon = styled(Info)`
-  vertical-align: middle;
-  margin-right: 5px;
-  display: inline-block;
-`;
 
-const Title = styled.h3`
-  vertical-align: middle;
-  display: inline-block;
-  margin: 0;
-`;
 
-const CONTACT_EMAIL = 'mode9.dev@gmail.com';
-
-const InfoModalBody = function () {
-    return (
-        <>
-            <h4>약국 방문 전에 확인 전화를 권장드립니다.</h4>
-            <p>
-                <u>국립중앙의료원</u>에서 제공하는 심야운영약국 데이터를 기반으로 제작되었으며, 실제약국의 영업시간과는 다를 수 있습니다.
-            </p>
-            {/*<p>제보: <a href={`mailto:${CONTACT_EMAIL}`}><u>{CONTACT_EMAIL}</u></a></p>*/}
-        </>
-    )
-}
 
 const MapComponent = ((props: MapOptions): React.ReactElement=> {
     const mapRef = useRef<HTMLDivElement>(null);
     const store = useStore();
-    // const [pharms, setPharms] = useState<Pharmacy[]>([]);
     const [mapLoading, setMapLoading] = useState(true);
     const [initialized, setInitialized] = useState(false);
     const [moduleLoaded, setModuleLoaded] = useState(false);
     const [mapManager] = useState<NaverMap>(new NaverMap());
-    // const [findNearController, setFindNearController] = useState(null);
-    // const [locController, setLocController] = useState(null);
-    // const [infoController, setInfoController] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const transitions = useTransition(modalVisible, {
+
+    const state = useSelector<RootState, State>(state => state.pharmacies);
+    const selectorState = useSelector<RootState, SelectorState>(state => state.selector);
+    const selectedPharmacy = selectorState.selected ? new Pharmacy(selectorState.selected) : undefined;
+    const pharmacies = state.pharmacies;
+    const pharmaciesInBounds = filterPharmacies(pharmacies.map(row => new Pharmacy(row)), state.filters);
+    const isHoliday = state.filters.isHoliday || false;
+    const selectTransitions = useTransition(selectedPharmacy , {
         from: { opacity: 0, transform: "translateY(-40px)" },
         enter: { opacity: 1, transform: "translateY(0px)" },
         leave: { opacity: 0, transform: "translateY(-40px)" }
     });
-    const state = useSelector<State, State>(state => state);
-    const pharmacies = state.pharmacies.map(row => new Pharmacy(row));
-    const pharmaciesInBounds = filterPharmacies(pharmacies, state.filters);
-    const selectedPharmacy = state.selected;
-    console.log('selected: ', selectedPharmacy)
-
-        // React.useImperativeHandle(ref, () => ({
-    //     hasModuleLoaded: (): boolean => moduleLoaded,
-    //     getPharmaciesInBounds: () => pharms,
-    // }))
 
     if (!props.naverKey) throw new Error();
 
@@ -107,6 +79,7 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
                 latLng: latlng,
                 label: pharmacy.name,
                 disabled: !pharmacy.isOpen(state.filters.isHoliday),
+                id: pharmacy.id,
                 onClick: handleClickMarker,
             })
         }
@@ -124,7 +97,7 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         clearActiveMarkers();
         const outerAnchorNode = this.getElement().firstElementChild;
         outerAnchorNode.classList.add('active');
-        console.log('marker clicked', this);
+        handleSelectPharmacy(this.id);
         // if (this.infoWindow) {
         //     if (this.infoWindow.getMap()) {
         //         this.infoWindow.close();
@@ -141,7 +114,7 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         // const findNearContainerNode = this.getElement().firstElementChild;
         // findNearContainerNode?.classList.remove('active');
         this.setMap(null);
-        store.dispatch(filterChanged({bounds: mapManager.getBounds()}));
+        updateFilters({bounds: mapManager.getBounds()});
         updateMarkers();
 
         mapManager.updateMarkerClustering(mapManager.markers);
@@ -164,6 +137,18 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
             });
     }
 
+    function handleSelectPharmacy(pharmacyId: number) {
+        store.dispatch(selectPharmacy(pharmacies.find(row => row.id === pharmacyId) || null));
+
+    }
+
+    function clearSelectedPharmacy() {
+        // if (!selectedPharmacy) return;
+        setModalVisible(false);
+        // setSelectedPharmacy(null);
+        store.dispatch(selectPharmacy(null));
+    }
+
     function handleClickInfo (this: any) {
         setModalVisible(true);
     }
@@ -171,10 +156,11 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
     function clearActiveMarkers () {
         document.querySelectorAll('.marker__root.active').forEach((el) => {
             el.classList.remove('active');
-        })
+        });
+        clearSelectedPharmacy();
     }
 
-    function handleInitMap (): void {
+    function handleInitMap () {
         const _findNearController = mapManager.insertCustomControl(nearControlHtml, {position: mapManager.module.maps.Position.BOTTOM_CENTER, hidden: true}, handleClickNear);
         const _infoController = mapManager.insertCustomControl(infoControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickInfo);
         const _locController = mapManager.insertCustomControl(locationControlHtml, {position: mapManager.module.maps.Position.TOP_LEFT}, handleClickGeolocation);
@@ -230,7 +216,6 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
 
     useEffect(() => {
         if (!mapLoading) {
-            console.log(pharmaciesInBounds);
             updateMarkers();
             mapManager.updateMarkerClustering(mapManager.markers);
             mapManager.markerCluster._redraw();
@@ -248,16 +233,8 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
             />
             {mapLoading && <Spinner />}
             <div id="map" ref={mapRef} >
-                {transitions( ( styles, item ) =>
-                    item && (
-                        <Modal
-                            style={styles}
-                            closeModal={() => setModalVisible(false)}
-                            title={<><TitleIcon /><Title>안내사항</Title></>}
-                            body={<InfoModalBody />}
-                        />
-                    )
-                )}
+                <InfoWindowModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+                <PharmacyDetailModal pharmacy={selectedPharmacy} isHoliday={isHoliday} onClose={clearSelectedPharmacy} />
             </div>
 
 

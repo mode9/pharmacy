@@ -8,8 +8,10 @@ import {theme} from "../styles/theme";
 import Pharmacy, {filterPharmacies} from "../core/pharmacies";
 import {FormatLineHeight} from "css.gg/icons/all";
 import {distance, humanizeDistance} from "../core/mapManager/helpers";
-import {useSelector} from "react-redux";
+import {useSelector, useStore} from "react-redux";
 import {State} from "../core/reducers/types";
+import {RootState} from "../core/reducers";
+import {selectPharmacy} from "../core/reducers/selector";
 
 const HEIGHT = 500;
 const MIN_HEIGHT = 92;
@@ -98,6 +100,7 @@ const GridRow = styled.div`
   //margin-bottom: 0.625rem;
   padding: 0.7rem 1rem;
   border-bottom: 1px solid #dddbda;
+  cursor: pointer;
   &:last-of-type {
     margin-bottom: 2rem;
     border-bottom: unset;
@@ -137,10 +140,15 @@ function BottomPanel () {
     const [opened, setOpened] = useState(false);
     const gridBodyRef = useRef<HTMLDivElement>(null);
     const [scrollable, setScrollable] = useState(false);
-    const state = useSelector<State, State>(state => state);
+    const state = useSelector<RootState, State>(state => state.pharmacies);
     const center = state.filters.bounds?.getCenter();
-    const pharmacies = state.pharmacies.map(row => new Pharmacy(row));
-    const pharmaciesInBounds = filterPharmacies(pharmacies, state.filters);
+    const pharmacies = state.pharmacies;
+    const pharmaciesInBounds = filterPharmacies(pharmacies.map(row => new Pharmacy(row)), state.filters);
+    const store = useStore();
+
+    function handleClick (pharmacyId: number) {
+        store.dispatch(selectPharmacy(pharmacies.find(row => row.id === pharmacyId) || null))
+    }
 
     useEffect(() => {
         if (gridBodyRef.current) {
@@ -213,7 +221,7 @@ function BottomPanel () {
                 </GridHeader>
                 <GridBody ref={gridBodyRef} scrollable={scrollable}>
                     {pharmaciesInBounds.map((row, idx) => (
-                        <GridRow key={idx}>
+                        <GridRow key={idx} onClick={() => handleClick(row.id)}>
                             <ContentColumn>
                                 <ContentTitle>{row.name}</ContentTitle>
                                 <ContentDescription>

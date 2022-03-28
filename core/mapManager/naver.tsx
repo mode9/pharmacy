@@ -86,7 +86,8 @@ export class NaverMap implements mapInterface {
                 anchor: new this.module.maps.Point(10, 20),
                 // size: new this.module.maps.Size(18, 18)
             },
-            title: props.label
+            title: props.label,
+            id: props.id,
         })
         marker.disabled = props.disabled;
         if (props.onClick) {

@@ -1,10 +1,12 @@
 import styled from "styled-components";
-import {useSelector} from "react-redux";
+import {useSelector, useStore} from "react-redux";
 import {State} from "../core/reducers/types";
 import Pharmacy, {filterPharmacies} from "../core/pharmacies";
 import React from "react";
 import {Mail} from "css.gg/icons/all";
 import Dropdown from "./dropdown";
+import {RootState} from "../core/reducers";
+import {selectPharmacy} from "../core/reducers/selector";
 
 
 const EMAIL_ADDRESS = 'mode.dev@gmail.com';
@@ -37,6 +39,7 @@ const GridRow = styled.div`
   padding: 0.7rem 1rem;
   border-radius: 10px;
   display: flex;
+  cursor: pointer;
   &:hover {
     background-color: #f0f0f0;
   }
@@ -78,10 +81,15 @@ const BorderCircle = styled.div`
 `;
 
 export default function Sidebar () {
-    const state = useSelector<State, State>(state => state);
-    const pharmacies = state.pharmacies.map(row => new Pharmacy(row));
-    const pharmaciesInBounds = filterPharmacies(pharmacies, state.filters);
+    const state = useSelector<RootState, State>(state => state.pharmacies);
+    const pharmacies = state.pharmacies;
+    const pharmaciesInBounds = filterPharmacies(pharmacies.map(row => new Pharmacy(row)), state.filters);
     const center = state.filters.bounds?.getCenter();
+    const store = useStore();
+
+    function handleClick (pharmacyId: number) {
+        store.dispatch(selectPharmacy(pharmacies.find(row => row.id === pharmacyId) || null))
+    }
 
     return (
         <Wrapper id="sidebar" >
@@ -95,8 +103,8 @@ export default function Sidebar () {
             {/*    <ContentDescription>검색결과 총 15 개</ContentDescription>*/}
             {/*</GridHeader>*/}
             <Dropdown />
-            {pharmaciesInBounds.map((row, idx) => (
-                <GridRow key={idx}>
+                {pharmaciesInBounds.map((row, idx) => (
+                <GridRow key={idx} onClick={() => handleClick(row.id)}>
                     <ContentColumn>
                         <ContentTitle>{row.name}</ContentTitle>
                         <ContentDescription>

@@ -32,6 +32,9 @@ class OpeningHours {
     if (!opening && !closing) return "영업안함"
     const humanizedOpening = opening?.format('{hour-24-pad}:{minute-pad}') || "알수없음";
     const humanizedClosing = closing?.format('{hour-24-pad}:{minute-pad}') || "알수없음";
+    if (humanizedOpening === '00:00' && humanizedClosing === '00:00') {
+      return '24시간 영업';
+    }
     return `${humanizedOpening} ~ ${humanizedClosing}`;
   }
   isOpen(): boolean {
