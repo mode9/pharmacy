@@ -7,8 +7,8 @@ from urllib import parse
 import os
 import logging
 
-from dotenv import load_dotenv
-import requests
+# from dotenv import load_dotenv
+# import requests
 
 APP_DIR = Path(__file__).resolve(strict=True).parent
 logger = logging.getLogger(__name__)
@@ -100,7 +100,16 @@ def main():
 if __name__ == '__main__':
     # load_dotenv(verbose=True)
     # main()
-    with open(APP_DIR / 'data_err.json', 'r') as f:
+#     with open(APP_DIR / 'data_err.json', 'r') as f:
+#         data = json.load(f)
+#         for row in data:
+#             print(row)
+    with open(APP_DIR / 'data_new.json', 'r') as f:
         data = json.load(f)
-        for row in data:
-            print(row)
+
+    for idx, row in enumerate(data):
+        row['id'] = idx
+
+    with open(APP_DIR / 'data_new_new.json', 'w+') as f:
+        json.dump(data, f)
+

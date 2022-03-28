@@ -2,7 +2,7 @@ import React, {createElement, useState} from "react";
 import Pharmacy from "../../core/pharmacies";
 import styled from "styled-components";
 import {animated, useTransition} from "@react-spring/web";
-import Modal from "../modal";
+import CustomModal from "../customModal";
 import {ChevronLeft} from "../chevron";
 
 
@@ -194,9 +194,8 @@ export default function PharmacyDetailModal ({pharmacy, isHoliday, onClose}: { p
     }
     return selectTransitions( ( styles, item ) =>
             item && (
-                <Modal
+                <CustomModal
                     style={styles}
-                    size="mini"
                     closeModal={handleClose}
                     title={!index ? <Header>{pharmacy?.name}</Header> : <Header><ChevronLeft onClick={handlePrev} />영업시간</Header>}
                     body={
@@ -206,7 +205,6 @@ export default function PharmacyDetailModal ({pharmacy, isHoliday, onClose}: { p
                             </animated.div>
                         ))
                     }
-                    allowOverflow={!!index}
                 />
             )
     )

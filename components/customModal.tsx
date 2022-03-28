@@ -2,11 +2,6 @@ import React, {MouseEventHandler, useEffect, useState} from "react";
 import {animated, useTransition} from "@react-spring/web";
 import styled from "styled-components";
 
-
-type ModalComponentType = {
-    size: string;
-}
-
 const Backdrop = styled(animated.div)`
   width: 100%;
   height: 100%;
@@ -18,9 +13,9 @@ const Backdrop = styled(animated.div)`
   justify-content: center;
 `;
 
-const ModalComponent = styled(animated.div)<ModalComponentType>`
+const ModalComponent = styled(animated.div)`
   width: 100%;
-  max-width: ${props => props.size === 'mini' ? '600px' : '800px'};
+  max-width: 600px;
   color: #000;
   background: #fff;
   padding: 40px;
@@ -37,15 +32,13 @@ const Header = styled.div`
   overflow: hidden;
 `;
 
-const Body = styled.div<{allowOverflow: boolean}>`
+const Body = styled.div`
   font-size: 15px;
-  //max-height: 500px;
   overflow-x: hidden;
-  overflow-y: ${props => props.allowOverflow ? 'auto' : 'hidden'};
+  overflow-y: auto;
   position: relative;
   width: 100%;
   height: 100%;
-  //height: 320px;
   
   & > div {
     will-change: transform, opacity;
@@ -77,11 +70,9 @@ type ModalProps = {
     body: React.ReactElement|string;
     style: {opacity: any, transform: any};
     closeModal: () => void, size?: string;
-    allowOverflow?: boolean;
-    footer?: React.ReactElement|string;
 }
 
-const Modal = ({ title, body, style, closeModal, size = 'medium', allowOverflow = false, footer = '닫기' }: ModalProps) => {
+const CustomModal = ({ title, body, style, closeModal }: ModalProps) => {
     const backdropClick: MouseEventHandler = (event) => {
         // @ts-ignore
         const target: HTMLElement = event.target;
@@ -90,22 +81,15 @@ const Modal = ({ title, body, style, closeModal, size = 'medium', allowOverflow 
     }
     return (
         <Backdrop className="modal-backdrop" style={{opacity: style.opacity}} onClick={backdropClick}>
-            <ModalComponent style={style} className="modal" size={size}>
-                <Header>
-                    {title}
-                </Header>
-                <Body allowOverflow={allowOverflow}>
-                    {body}
-                    {/*<p><small>실제 약국의 영업시간 제보 혹은 최신화를 원하시는 분은 <u>mode9.dev@gmail.com</u> 으로 이메일 주시면 확인 후 반영하도록 하겠습니다.</small></p>*/}
-                </Body>
+            <ModalComponent style={style} className="modal">
+                <Header>{title}</Header>
+                <Body>{body}</Body>
                 <Footer>
-                <ModalButton className="modal-close-button" onClick={closeModal}>
-                    {footer}
-                </ModalButton>
+                    <ModalButton className="modal-close-button" onClick={closeModal}>닫기</ModalButton>
                 </Footer>
             </ModalComponent>
         </Backdrop>
     )
 }
 
-export default Modal;
+export default CustomModal;
