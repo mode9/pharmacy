@@ -36,15 +36,13 @@ const Footer = styled.div`
   margin: 4rem 0 2rem 0;
 `
 
-const GridRow = styled.div`
+const GridRow = styled.div<{isOpen: boolean}>`
   width: 100%;
   padding: 0.7rem 1rem;
   border-radius: 10px;
   display: flex;
-  //cursor: pointer;
-  //&:hover {
-  //  background-color: #f0f0f0;
-  //}
+  background: ${props => props.isOpen ? 'transparent' : '#f0f0f0'};
+  opacity: ${props => props.isOpen ? 1 : .65};
 `;
 
 const GridHeader = styled.div`
@@ -123,7 +121,7 @@ export default function Sidebar () {
             {/*</GridHeader>*/}
             <Dropdown />
                 {pharmaciesInBounds.map((row, idx) => (
-                <GridRow key={idx}>
+                <GridRow key={idx} isOpen={row.isOpen(state.filters.isHoliday)}>
                     <ContentColumn>
                         <ContentTitle>
                             <a href='#' onClick={() => handleClick(row.id)}>
@@ -134,7 +132,9 @@ export default function Sidebar () {
                             <span style={{ width: '35px', display: 'inline-block' }}>{center ? row.humanizedDistance(center) : "알수없음"}</span>
                             <span className="delimiter" style={{padding: '0 2px'}}>&#8226;</span>
                             {/*{row.isOpen(props.isHoliday) ? <AccentDescription>영업 중</AccentDescription> : "영업종료"} &#8226;*/}
-                            <span style={{ display: 'inline-block', textAlign: 'left' }}>{row.todayOpeningHour(state.filters.isHoliday).humanizeWorkingHours()}</span>
+                            <span style={{ display: 'inline-block', textAlign: 'left' }}>
+                                {row.isOpen(state.filters.isHoliday) ? row.todayOpeningHour(state.filters.isHoliday).humanizeWorkingHours() : '영업 종료'}
+                            </span>
                             <ContentDescriptionAddress>{(row.address_road || row.address)?.split(' ').splice(1).join(' ')}</ContentDescriptionAddress>
                         </ContentDescription>
                     </ContentColumn>

@@ -96,13 +96,15 @@ const GridBody = styled.div< { scrollable: boolean } >`
   //overscroll-behavior: none;
 `;
 
-const GridRow = styled.div`
+const GridRow = styled.div<{isOpen: boolean}>`
   width: 100%;
   //margin-bottom: 0.625rem;
   padding: 0.7rem 1rem;
   border-bottom: 1px solid #dddbda;
   cursor: pointer;
   display: flex;
+  background: ${props => props.isOpen ? 'transparent' : '#f0f0f0'};
+  opacity: ${props => props.isOpen ? 1 : .65};
   &:last-of-type {
     margin-bottom: 2rem;
     border-bottom: unset;
@@ -232,14 +234,16 @@ function BottomPanel () {
                 </GridHeader>
                 <GridBody ref={gridBodyRef} scrollable={scrollable}>
                     {pharmaciesInBounds.map((row, idx) => (
-                        <GridRow key={idx} onClick={() => handleClick(row.id)}>
+                        <GridRow key={idx} isOpen={row.isOpen(state.filters.isHoliday)} onClick={() => handleClick(row.id)}>
                             <ContentColumn>
                                 <ContentTitle>{row.name}</ContentTitle>
                                 <ContentDescription>
                                     <span style={{ width: '35px', display: 'inline-block' }}>{center ? row.humanizedDistance(center) : "알수없음"}</span>
                                     <span className="delimiter" style={{padding: '0 2px'}}>&#8226;</span>
                                     {/*{row.isOpen(props.isHoliday) ? <AccentDescription>영업 중</AccentDescription> : "영업종료"} &#8226;*/}
-                                    <span style={{ display: 'inline-block', textAlign: 'left' }}>{row.todayOpeningHour(state.filters.isHoliday).humanizeWorkingHours()}</span>
+                                    <span style={{ display: 'inline-block', textAlign: 'left' }}>
+                                        {row.isOpen(state.filters.isHoliday) ? row.todayOpeningHour(state.filters.isHoliday).humanizeWorkingHours() : '영업 종료'}
+                                    </span>
                                     <ContentDescriptionAddress>{(row.address_road || row.address)?.split(' ').splice(1).join(' ')}</ContentDescriptionAddress>
                                 </ContentDescription>
                             </ContentColumn>
