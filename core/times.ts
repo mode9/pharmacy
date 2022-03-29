@@ -19,12 +19,26 @@ class OpeningHours {
     this.opening = data.opening;
     this.closing = data.closing;
   }
+  calcDatetime (time: string): Spacetime {
+    const now: Spacetime = spacetime.now(TIMEZONE);
+    let hours: number = parseInt(time.split(':')[0]);
+    let newTime;
+    if (hours > 23) {
+      newTime = now.add(1, 'date');
+      hours = hours - 24;
+      let closingTime = hours + ':' + time.split(':')[1];
+      newTime = newTime.time(closingTime);
+    } else {
+      newTime = now.time(time);
+    }
+    return newTime;
+  }
 
   getOpening(): Spacetime|null {
     return this.opening ? spacetime.now(TIMEZONE).time(this.opening) : null;
   }
   getClosing(): Spacetime|null {
-   return this.closing ? spacetime.now(TIMEZONE).time(this.closing) : null;
+   return this.closing ? this.calcDatetime(this.closing) : null;
   }
   humanizeWorkingHours(): string {
     const opening = this.getOpening();
@@ -35,22 +49,13 @@ class OpeningHours {
     if (humanizedOpening === '00:00' && humanizedClosing === '00:00') {
       return '24시간 영업';
     }
-    return `${humanizedOpening} ~ ${humanizedClosing}`;
+    return `${this.opening} ~ ${this.closing}`;
   }
   isOpen(): boolean {
     if (!this.opening || !this.closing) return false;
     const now: Spacetime = spacetime.now(TIMEZONE);
     const opening: Spacetime = now.time(this.opening);
-    let closingHours: number = parseInt(this.closing.split(':')[0]);
-    let closing;
-    if (closingHours > 23) {
-      closing = now.add(1, 'date');
-      closingHours = closingHours - 24;
-      let closingTime = closingHours + ':' + this.closing.split(':')[1];
-      closing = closing.time(closingTime);
-    } else {
-      closing = now.time(this.closing);
-    }
+    const closing: Spacetime = this.calcDatetime(this.closing);
     return now.isBetween(opening, closing);
   }
 }

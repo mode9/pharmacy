@@ -12,9 +12,14 @@ import {isHoliday} from "../core/utils";
 
 
 export const getServerSideProps = reduxWrapper.getServerSideProps(store => async () => {
-    const {NAVER_KEY} = process.env;
-    const pharmacyAPIRessult: PharmacyAPIResult = await fetch('http://localhost:3000/api/pharmacies').then(res => res.json());
-    const holidayAPIResult: HolidayAPIResult = await fetch("http://localhost:3000/api/holidays").then(res => res.json());
+    const {NAVER_KEY, AUTH_KEY} = process.env;
+    const options = {headers: {Authorization: AUTH_KEY}};
+    // @ts-ignore
+    const pharmacyAPIRessult: PharmacyAPIResult = await fetch('http://localhost:3000/api/pharmacies', options)
+        .then(res => res.json());
+    // @ts-ignore
+    const holidayAPIResult: HolidayAPIResult = await fetch("http://localhost:3000/api/holidays", options)
+        .then(res => res.json());
     store.dispatch(receivePharmacyData(pharmacyAPIRessult.data));
     store.dispatch(filterChanged({
         isHoliday: isHoliday(holidayAPIResult.data),

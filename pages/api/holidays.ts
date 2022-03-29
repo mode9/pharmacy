@@ -9,6 +9,9 @@ export default async function handler(
     res: NextApiResponse<HolidayAPIResult>
 ) {
     const method: string = req.method ? req.method : HttpMethod.GET;
+    if (req.headers.authorization !== process.env.AUTH_KEY) {
+        return res.status(401).json({meta: {status: 401, action: method}, data: []});
+    }
     const result: HolidayAPIResult = {
         meta: {
             status: 200,

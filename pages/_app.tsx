@@ -17,8 +17,9 @@ const WrappedApp = ({Component, pageProps}: AppProps) => {
     return (
         <>
             <Head>
-                <title>MEDI-LIVE</title>
+                <title>심야약국</title>
                 <meta name='viewport' content='initial-scale=1, viewport-fit=cover' />
+                <meta name='description' content='휴일이나 심야에 영업 중인 약국을 보여드려요' />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@100;300;400;500;700&display=swap"

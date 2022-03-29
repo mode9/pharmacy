@@ -133,7 +133,7 @@ const ActionColumn = styled.div`
   width: 30%;
   display: flex;
   align-items: center;
-  justify-content: right;
+  justify-content: flex-end;
 `;
 
 const AccentDescription = styled.span`
@@ -249,7 +249,7 @@ function BottomPanel () {
                             </ContentColumn>
                             <ActionColumn>
                                 <HoverContainer onClick={(e) => {handleLocationClick(e, row)}}>
-                                    <Location />
+                                    <Location style={{color: '#000'}} />
                                 </HoverContainer>
                             </ActionColumn>
                         </GridRow>

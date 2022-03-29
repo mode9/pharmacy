@@ -1,5 +1,4 @@
-import type {NextApiRequest, NextApiResponse} from 'next';
-
+import type {NextApiRequest, NextApiResponse, } from 'next';
 
 import {APIMetaType, HttpMethod} from './_api';
 import {readFromJson} from '../../core/utils';
@@ -15,6 +14,9 @@ export default async function handler(
     res: NextApiResponse<PharmacyAPIResult>
   ) {
   const method: string = req.method ? req.method : HttpMethod.GET;
+  if (req.headers.authorization !== process.env.AUTH_KEY) {
+    return res.status(401).json({meta: {status: 401, action: method}, data: []});
+  }
   const result: PharmacyAPIResult = {
     meta: {
       status: 200,
