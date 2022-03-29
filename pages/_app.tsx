@@ -20,6 +20,10 @@ const WrappedApp = ({Component, pageProps}: AppProps) => {
                 <title>심야약국</title>
                 <meta name='viewport' content='initial-scale=1, viewport-fit=cover' />
                 <meta name='description' content='휴일이나 심야에 영업 중인 약국을 보여드려요' />
+                <meta name='keywords' content='심야약국,문 연 약국,주말약국,주말 약국,심야 약국,약국' />
+                <meta property='og:title' content='심야약국' />
+                <meta property='og:url' content='https://getdrug.co' />
+                <meta property='og:description' content='휴일이나 심야에 영업 중인 약국을 보여드려요' />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@100;300;400;500;700&display=swap"
