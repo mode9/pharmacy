@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import ReactGA from "react-ga";
 
 import BottomPanel from "../components/bottomPanel";
 import MapComponent from "../components/map";
@@ -20,13 +21,14 @@ export const getServerSideProps = reduxWrapper.getServerSideProps(store => async
     // @ts-ignore
     const holidayAPIResult: HolidayAPIResult = await fetch("http://localhost:3000/api/holidays", options)
         .then(res => res.json());
+    const isProduction = process.env.NODE_ENV === 'production';
     store.dispatch(receivePharmacyData(pharmacyAPIRessult.data));
     store.dispatch(filterChanged({
         isHoliday: isHoliday(holidayAPIResult.data),
         bounds: null,
         showClosed: true,
     }));
-    return { props: { NAVER_KEY } }
+    return { props: { NAVER_KEY, isProduction } }
 });
 
 const Wrapper = styled.div`
@@ -36,14 +38,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-// const Wrapper = styled('div', ({$theme}) => ({
-//     width: '100%',
-//     height: '100%',
-//     backgroundColor: $theme.colors.backgroundPrimary,
-//     display: 'flex',
-//     flexDirection: 'column'
-// }))
 
 const Header = styled.div`
   width: 100%;
@@ -91,14 +85,20 @@ const Content = styled.div`
 `;
 
 type HomeSSRProps = {
-    data: PharmacyData[];
     NAVER_KEY?: string;
-    isHoliday: boolean;
+    isProduction: boolean;
 }
 
 
 export default function Home (props: HomeSSRProps): JSX.Element {
-    const { NAVER_KEY } = props;
+    const { NAVER_KEY, isProduction } = props;
+
+    React.useEffect(() => {
+        if (isProduction) {
+            ReactGA.initialize('G-JTL1R43K0F');
+            ReactGA.pageview(window.location.pathname + window.location.search);
+        }
+    }, [isProduction])
 
     return (
         <Wrapper>
