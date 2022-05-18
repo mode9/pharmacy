@@ -46,8 +46,8 @@ function PharmacyDetailBody ({pharmacy, isHoliday, onNext}: { pharmacy?: Pharmac
             <div style={{margin: '15px 0'}}>
                 <div style={{margin: '.5rem 0', display: 'flex'}}>
                     <span>영업시간</span>
-                    <a href="#" onClick={onNext}
-                       style={{marginLeft: 'auto', fontSize: '11px', color: 'blue', alignSelf: 'center'}}>자세히보기 &gt;</a>
+                    <span onClick={onNext}
+                       style={{marginLeft: 'auto', fontSize: '11px', color: 'blue', alignSelf: 'center'}}>자세히보기 &gt;</span>
                 </div>
                 <div style={{
                     backgroundColor: '#f0f0f0',

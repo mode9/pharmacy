@@ -101,21 +101,9 @@ const MapComponent = ((props: MapOptions): React.ReactElement=> {
         clearActiveMarkers();
         activateMarker(this)
         handleSelectPharmacy(this.id);
-        // if (this.infoWindow) {
-        //     if (this.infoWindow.getMap()) {
-        //         this.infoWindow.close();
-        //     } else {
-        //         this.infoWindow.open(this.getMap(), this);
-        //     }
-        // } else {
-        //     this.infoWindow = mapManager.createInfoWindow(this);
-        //     this.infoWindow.open(this.getMap(), this);
-        // }
     }
 
     function handleClickNear (this: any): void{
-        // const findNearContainerNode = this.getElement().firstElementChild;
-        // findNearContainerNode?.classList.remove('active');
         this.setMap(null);
         updateFilters({bounds: mapManager.getBounds()});
         updateMarkers();
