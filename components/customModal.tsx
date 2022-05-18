@@ -29,7 +29,6 @@ const ModalComponent = styled(animated.div)`
 
 const Header = styled.div`
   margin-bottom: .5rem;
-  overflow: hidden;
 `;
 
 const Body = styled.div`
