@@ -95,7 +95,7 @@ export default function Home (props: HomeSSRProps): JSX.Element {
 
     React.useEffect(() => {
         if (isProduction) {
-            ReactGA.initialize('G-JTL1R43K0F');
+            ReactGA.initialize('G-GVVZ7B7BY7');
             ReactGA.pageview(window.location.pathname + window.location.search);
         }
     }, [isProduction])

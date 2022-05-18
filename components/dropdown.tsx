@@ -58,6 +58,7 @@ const DropdownItemContainer = styled.div<DropdownItemContainerProps>`
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
   left: -1px;
+  z-index: 1;
 `;
 const DropdownItem = styled.div`
   padding: 10px;
