@@ -39,37 +39,6 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const Header = styled.div`
-  width: 100%;
-  min-height: 60px;
-  max-height: 200px;
-  background: #fff;
-  border-bottom: 1px solid #E2E2E2;
-`
-
-// const Nav = (props: any) => {
-//     return (
-//         <nav
-//             className={css({
-//                 display: 'block',
-//                 [theme.mediaQuery.large]: {
-//                     display: 'none'
-//                 }
-//             })}
-//         >
-//             <AppNavBar
-//                 title="MEDI-LIVE"
-//                 mainItems={[
-//                     {
-//                         icon: Alert,
-//                         label: "INFO"
-//                     },
-//                 ]}
-//             />
-//         </nav>
-//     )
-// }
-
 const Main = styled.div`
   width: 100%;
   height: 100%;
@@ -102,13 +71,10 @@ export default function Home (props: HomeSSRProps): JSX.Element {
 
     return (
         <Wrapper>
-            {/*{loading && <ProgressLoaderComponent value={value} />}*/}
             <BottomPanel />
-            {/*<Header />*/}
             <Main>
                 <Sidebar />
                 <Content >
-                    {/*<Nav />*/}
                     <MapComponent naverKey={NAVER_KEY} filterInBounds={true} disableClosed={true} />
                 </Content>
             </Main>
