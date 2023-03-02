@@ -1,6 +1,6 @@
 웹사이트 링크: [바로가기](https://getdrug.co)
 
-[<img alt="alt_text" width="40px" src="images/image.webp" />](https://getdrug.co/)
+[<img alt="website screenshot alt" width="1024px" src="image.webp" />](https://getdrug.co/)
 
 
 # Install
